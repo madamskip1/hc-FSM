@@ -20,6 +20,14 @@ namespace FSM
 		virtual void print() const { std::cout << "State base \n"; };
 		State() = default;
 	};
+
+	template<typename ...StatesTypes>
+	struct States
+	{
+		static_assert(std::conjunction_v<std::is_base_of<FSM::State, StatesTypes>...>,
+			"All states must be derifed from FSM::State");
+		using states_tuple_type = std::tuple<StatesTypes*...>;
+	};
 }
 
 

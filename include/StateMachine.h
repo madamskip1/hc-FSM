@@ -2,22 +2,23 @@
 #include <unordered_map>
 #include "State.h"
 #include "Event.h"
+#include <iostream>
+#include <typeindex>
 
 
 namespace FSM {
-    template <typename... Args>
+    template <typename TransitionsTable, typename StatesTable>
     class StateMachine {
     public:
-        static_assert(std::conjunction_v<std::is_base_of<FSM::State, Args>...>,
-            "All states must be derifed from FSM::State");
 
-        using states_tuple_types = std::tuple<Args*...>;
-
-        StateMachine(Args*... args) : data(std::make_tuple(args...)) {
+        using states_tuple_type = typename StatesTable::states_tuple_type;
+        using transitions_table = TransitionsTable;
+        
+        StateMachine(states_tuple_type tuples) : data(tuples) {
             currentState = getState<0>();
         }
 
-        std::tuple<Args*...> data;
+        states_tuple_type data;
         State* currentState;
 
         template <std::size_t N> 
@@ -35,7 +36,7 @@ namespace FSM {
 
         template <typename T>
         bool hasState() {
-            return hasState_impl<T, Args...>();
+            return hasState_impl<T*>(data);
         }
 
         template <typename T>
@@ -52,8 +53,9 @@ namespace FSM {
 
     private:
         template <typename T, typename ...U>
-        constexpr static bool hasState_impl() {
+        constexpr static bool hasState_impl(const std::tuple<U...>& tuple) {
             return (std::is_same_v<T, U> || ...);
         }
     };
+
 }
