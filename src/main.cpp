@@ -54,9 +54,11 @@ int main()
 {
     using transition1 = FSM::Transition<StateA, EventB, StateB>;
     using transition2 = FSM::Transition<StateB, EventA, StateA>;
+    using transition3 = FSM::Transition<StateB, EventB, StateB>;
     using Trans = FSM::TransitionsTable <
         transition1,
-        transition2
+        transition2,
+        transition3
     >;
     using States = FSM::States<StateA, StateB>;
 
@@ -80,9 +82,23 @@ int main()
     FSM.forceTransition<StateB>();
     FSM.print();
 
-    std::cout << "DUPA \n";
     std::cout << FSM::hasTransition<Trans, StateA, EventB>::value << '\n';
     std::cout << FSM::hasTransition<Trans, StateA, EventA>::value << '\n';
 
+    
+    using nextType = FSM::getNextStateFromTransition<Trans, StateA, EventB>::type;
+    nextType newState{};
+    newState.print();
+    FSM.forceTransition<nextType>();
+    FSM.print();
+
+    
+    std::cout << std::endl;
+    std::cout << std::type_index(typeid(typename FSM::getNextStateFromTransition<Trans, StateA, EventB>::type)).name();
+    std::cout << std::endl;
+    std::cout << std::type_index(typeid(typename FSM::getNextStateFromTransition<Trans, StateB, EventA>::type)).name();
+    std::cout << std::endl;
+    std::cout << std::type_index(typeid(typename FSM::getNextStateFromTransition<Trans, StateB, EventB>::type)).name();
+    std::cout << std::endl;
     return 0;
 }
