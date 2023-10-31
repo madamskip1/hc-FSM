@@ -60,9 +60,9 @@ namespace FSM
 			using type = typename getStatesFromTransitionsTable_impl<with_before_after_state, std::tuple<Tail...>>::type;
 		};
 
-		using states_types_tuple = typename getStatesFromTransitionsTable_impl<typename std::tuple<>, typename Transitions_Table::transitions>::type;
+		using states_tuple_type = typename getStatesFromTransitionsTable_impl<typename std::tuple<>, typename Transitions_Table::transitions>::type;
 	};
 
 	template <typename Transitions_Table>
-	using getStatesFromTransitionsTable_t = typename getStatesFromTransitionsTable<Transitions_Table>::states_types_tuple;
+	using getStatesFromTransitionsTable_t = typename getStatesFromTransitionsTable<Transitions_Table>::states_tuple_type;
 }

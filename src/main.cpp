@@ -5,6 +5,7 @@
 #include "event.h"
 #include "transitions-table.h"
 #include "transition.h"
+#include "finite-state-machine.h"
 
 
 struct EventA : public FSM::Event {};
@@ -27,9 +28,10 @@ int main()
         transition3,
         transition4
     >;
-    using states_tuple = typename FSM::getStatesFromTransitionsTable<Trans>::states_types_tuple;
-    std::cout << std::type_index(typeid(states_tuple)).name() << '\n';
+    using states_tuple_type = typename FSM::getStatesFromTransitionsTable<Trans>::states_tuple_type;
+    std::cout << std::type_index(typeid(states_tuple_type)).name() << '\n';
     std::cout << std::type_index(typeid(FSM::getStatesFromTransitionsTable_t<Trans>)).name() << '\n';
-
+    std::cout << std::type_index(typeid(FSM::variantTypeFromStatesTuple_t<states_tuple_type>)).name() << '\n';
+    auto fsm = FSM::StateMachine<Trans, StateC>{};
     return 0;
 }
