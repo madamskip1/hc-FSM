@@ -9,7 +9,35 @@ namespace FSM
 		using transitions = std::tuple<T...>;
 	};
 
+	template <typename Transitions_Table, typename BeforeStateType, typename EventType>
+	struct hasTransition
+	{
+		template <typename TransitionTuple>
+		static constexpr bool doTransitionMatch()
+		{
+			return std::conjunction_v<
+				std::is_same<typename TransitionTuple::before_state_type, BeforeStateType>,
+				std::is_same<typename TransitionTuple::event_type, EventType>
+			>;
+		}
 
+		template <typename ...Transitions>
+		struct hasTransition_impl;
+
+		template <>
+		struct hasTransition_impl<std::tuple<>> : std::false_type {};
+
+		template <typename ...Transitions>
+		struct hasTransition_impl<std::tuple<Transitions...>>
+		{
+			static constexpr bool value = (doTransitionMatch<Transitions>() || ...);
+		};
+
+		static constexpr bool value = hasTransition_impl<typename Transitions_Table::transitions>::value;
+	};
+
+	template <typename Transitions_Table, typename BeforeStateType, typename EventType>
+	static constexpr bool hasTransition_v = hasTransition<Transitions_Table, BeforeStateType, EventType>::value;
 
 
 	template <typename Transitions_Table>

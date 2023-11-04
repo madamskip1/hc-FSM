@@ -126,5 +126,11 @@ int main()
     std::cout << "onExitNoArgs(): " << FSM::has_onExitNoEventArg_v<StateD> << std::endl;
     std::cout << "onExit(FSM::EventA&): " << FSM::has_onExit_v<StateD, EventA> << std::endl;
 
+
+    std::cout << "hasTransition<StateA, EventB>: " << FSM::hasTransition<Trans, StateA, EventB>::value << std::endl;
+    std::cout << "hasTransition<StateB, EventA>: " << FSM::hasTransition_v<Trans, StateB, EventA> << std::endl;
+    
+    std::cout << "hasTransition<StateA, EventB>: " << FSM::hasTransition<Trans, StateA, EventB>::value << std::endl;
+    std::cout << "hasTransition<StateB, EventA>: " << FSM::hasTransition_v<Trans, StateB, EventA> << std::endl;
     return 0;
 }
