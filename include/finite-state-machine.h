@@ -53,6 +53,42 @@ namespace FSM
 	private:
 		states_variant_type statesVariant;
 		//std::type_info statesVariantID;
+
+		template <typename CurrentState, typename EventType, typename NextState>
+		constexpr void handleEvent_impl(const EventType& event)
+		{
+			// auto currenState = ...
+			tryCallOnExit(State, event);
+
+			// auto nextState = ...
+			tryCallOnEnter(State, event);
+		}
+
+		template <typename StateType, typename EventType>
+		constexpr void tryCallOnExit(StateType& state, const EventType& event)
+		{
+			if constexpr (has_onEntry_v<StateType, EventType>)
+			{
+				state.onEnter(event);
+			}
+			else if constexpr (has_onEntryNoEventArg_v<StateType>)
+			{
+				state.onEnter();
+			}
+		}
+
+		template <typename StateType, typename EventType>
+		constexpr void tryCallOnEnter(StateType& state, const EventType& event)
+		{
+			if constexpr (has_onExit_v<StateType, EventType>)
+			{
+				state.onExit(event);
+			}
+			else if constexpr (has_onExitNoEventArg_v<StateType>)
+			{
+				state.onExit();
+			}
+		}
 	};
 
 	
