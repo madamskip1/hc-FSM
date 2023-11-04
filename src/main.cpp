@@ -16,6 +16,10 @@ struct StateB : public FSM::State {
     void onEntry() {
         std::cout << "StateB::onEntry() \n";
     }
+
+    void onExit() {
+        std::cout << "StateB::onExit() \n";
+    }
 };
 struct StateC : public FSM::State {
     void onEntry(const EventA& event)
@@ -26,12 +30,26 @@ struct StateC : public FSM::State {
     {
         std::cout << "StateC::onEntry(const FSM::Event& event) \n";
     }
+
+    void onExit(const EventA& event)
+    {
+        std::cout << "StateC::onExit(const FSM::Event& event) \n";
+    }
+    void onExit(const FSM::Event& event)
+    {
+        std::cout << "StateC::onExit(const FSM::Event& event) \n";
+    }
     
 };
 struct StateD : public FSM::State {
     void onEntry(const EventA& eventA)
     {
         std::cout << "StateC::onEntry(const EventA& event) \n";
+    }
+
+    void onExit(const EventA& eventA)
+    {
+        std::cout << "StateC::onExit(const EventA& event) \n";
     }
 };
 
@@ -84,7 +102,29 @@ int main()
     std::cout << "onEntry(FSM::EventA&): " << FSM::has_onEntry_v<StateD, EventA> << std::endl;
     
     
-    StateC{}.onEntry(FSM::Event{});
-    StateC{}.onEntry(EventA{});
+    std::cout << "StateA: \n";
+    std::cout << "onExitNoArgs(): " << FSM::has_onExitNoEventArg<StateA>::value << std::endl;
+    std::cout << "onExit(FSM::EventA&): " << FSM::has_onExit<StateA, EventA>::value << std::endl;
+    std::cout << "onExitNoArgs(): " << FSM::has_onExitNoEventArg_v<StateA> << std::endl;
+    std::cout << "onExit(FSM::EventA&): " << FSM::has_onExit_v<StateA, EventA> << std::endl;
+
+    std::cout << "StateB: \n";
+    std::cout << "onExitNoArgs(): " << FSM::has_onExitNoEventArg<StateB>::value << std::endl;
+    std::cout << "onExit(FSM::EventA&): " << FSM::has_onExit<StateB, EventA>::value << std::endl;
+    std::cout << "onExitNoArgs(): " << FSM::has_onExitNoEventArg_v<StateB> << std::endl;
+    std::cout << "onExit(FSM::EventA&): " << FSM::has_onExit_v<StateB, EventA> << std::endl;
+
+    std::cout << "StateC: \n";
+    std::cout << "onExitNoArgs(): " << FSM::has_onExitNoEventArg<StateC>::value << std::endl;
+    std::cout << "onExit(FSM::EventA&): " << FSM::has_onExit<StateC, EventA>::value << std::endl;
+    std::cout << "onExitNoArgs(): " << FSM::has_onExitNoEventArg_v<StateC> << std::endl;
+    std::cout << "onExit(FSM::EventA&): " << FSM::has_onExit_v<StateC, EventA> << std::endl;
+
+    std::cout << "StateD: \n";
+    std::cout << "onExitNoArgs(): " << FSM::has_onExitNoEventArg<StateD>::value << std::endl;
+    std::cout << "onExit(FSM::EventA&): " << FSM::has_onExit<StateD, EventA>::value << std::endl;
+    std::cout << "onExitNoArgs(): " << FSM::has_onExitNoEventArg_v<StateD> << std::endl;
+    std::cout << "onExit(FSM::EventA&): " << FSM::has_onExit_v<StateD, EventA> << std::endl;
+
     return 0;
 }
