@@ -132,5 +132,12 @@ int main()
     
     std::cout << "hasTransition<StateA, EventB>: " << FSM::hasTransition<Trans, StateA, EventB>::value << std::endl;
     std::cout << "hasTransition<StateB, EventA>: " << FSM::hasTransition_v<Trans, StateB, EventA> << std::endl;
+
+    std::cout << "Next (StateA, EventB): " << std::type_index(typeid(typename FSM::getNextStateFromTransitionsTable<Trans, StateA, EventB>::type)).name() << std::endl;
+    std::cout << "Next (StateB, EventA): " << std::type_index(typeid(typename FSM::getNextStateFromTransitionsTable<Trans, StateB, EventA>::type)).name() << std::endl;
+    
+    std::cout << "Next (StateA, EventB): " << std::type_index(typeid(FSM::getNextStateFromTransitionsTable_t<Trans, StateA, EventB>)).name() << std::endl;
+    std::cout << "Next (StateB, EventA): " << std::type_index(typeid(FSM::getNextStateFromTransitionsTable_t<Trans, StateB, EventA>)).name() << std::endl;
+    
     return 0;
 }
