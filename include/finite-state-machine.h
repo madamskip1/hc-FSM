@@ -31,7 +31,7 @@ namespace FSM
 	class StateMachine
 	{
 	public:
-		using trasitions_table = TransitionsTable;
+		using transitions_table = TransitionsTable;
 		using states_tuple_type = getStatesFromTransitionsTable_t<TransitionsTable>;
 		using states_variant_type = variantTypeFromStatesTuple_t<states_tuple_type>;
 		using initial_state_type = std::conditional_t<
@@ -40,7 +40,7 @@ namespace FSM
 			InitialState
 		>;
 
-		StateMachine() : statesVariant{ initial_state_type{} } {};//, statesVariantID{ typeid(initial_state_type)} {};
+		StateMachine() : statesVariant{ initial_state_type{} } {};
 
 		template <typename NewState>
 		void forceTransition()
@@ -69,23 +69,31 @@ namespace FSM
 
 	private:
 		states_variant_type statesVariant;
-		//std::type_info statesVariantID;
 
 		template <typename EventType>
 		constexpr void handleEvent_impl(const EventType& event)
 		{
-		/*	auto lambda = [&event](const auto& curState) -> auto
+			auto lambda = [this, &event](const auto& curState)
 				{
-					using curStateType = decltype(curState);
-					using 
+					using curStateType = std::decay_t<decltype(curState)>;
+					using nextStateType = getNextStateFromTransitionsTable_t<transitions_table, curStateType, EventType>;
+
+					transit<nextStateType>(curState, event);
 				};
 
-			auto curStateHolder = std::visit(lambda, statesVariant);*/
-			// auto currenState = ...
-		//	tryCallOnExit(State, event);
+			std::visit(lambda, statesVariant);
+		}
 
-			// auto nextState = ...
-		//	tryCallOnEnter(State, event);
+		template <typename NextState, typename CurrentState, typename EventType>
+		constexpr void transit(CurrentState& currentState, const EventType& event)
+		{
+			if constexpr (!std::is_same_v<NextState, FSM::NoValidTransition>)
+			{
+				tryCallOnExit(currentState, event);
+				statesVariant.emplace<NextState>();
+				NextState& nextState = std::get<NextState>(statesVariant);
+				tryCallOnEntry(nextState, event);
+			}
 		}
 
 		template <typename StateType, typename EventType>
@@ -95,7 +103,7 @@ namespace FSM
 			{
 				state.onExit(event);
 			}
-			else if constexpr (has_onEntryNoEventArg_v<StateType>)
+			else if constexpr (has_onExitNoEventArg_v<StateType>)
 			{
 				state.onExit();
 			}
@@ -104,11 +112,11 @@ namespace FSM
 		template <typename StateType, typename EventType>
 		constexpr void tryCallOnEntry(StateType& state, const EventType& event)
 		{
-			if constexpr (has_onExit_v<StateType, EventType>)
+			if constexpr (has_onEntry_v<StateType, EventType>)
 			{
 				state.onEntry(event);
 			}
-			else if constexpr (has_onExitNoEventArg_v<StateType>)
+			else if constexpr (has_onEntryNoEventArg_v<StateType>)
 			{
 				state.onEntry();
 			}

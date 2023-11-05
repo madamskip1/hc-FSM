@@ -2,8 +2,11 @@
 #include <type_traits>
 #include <tuple>
 
+
 namespace FSM
 {
+	struct NoValidTransition {};
+
 	template <typename... T>
 	struct TransitionsTable {
 		using transitions = std::tuple<T...>;
@@ -49,7 +52,7 @@ namespace FSM
 		template <>
 		struct getNextStateFromTransitionsTable_impl<std::tuple<>>
 		{
-			using type = void;
+			using type = NoValidTransition;
 		};
 
 		template <typename Head, typename ...Tail>

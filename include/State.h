@@ -43,3 +43,4 @@ namespace FSM
 	template <typename StateType>
 	inline constexpr bool has_onExitNoEventArg_v = has_onExitNoEventArg<StateType>::value;
 }
+
