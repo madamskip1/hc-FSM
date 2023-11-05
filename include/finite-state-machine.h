@@ -20,6 +20,12 @@ namespace FSM
 	using variantTypeFromStatesTuple_t = typename variantTypeFromStatesTuple<StatesTuple>::type;
 
 
+	template <typename StateType>
+	struct StateTypeHolder
+	{
+		using type = StateType;
+	};
+
 
 	template <typename TransitionsTable, typename InitialState = void>
 	class StateMachine
@@ -48,45 +54,63 @@ namespace FSM
 			return std::holds_alternative<State>(statesVariant);
 		}
 
+		template <typename EventType>
+		void handleEvent()
+		{
+			handleEvent_impl(EventType{});
+		}
+
+		template <typename EventType>
+		void handleEvent(const EventType& event)
+		{
+			handleEvent_impl(event);
+		}
 
 
 	private:
 		states_variant_type statesVariant;
 		//std::type_info statesVariantID;
 
-		template <typename CurrentState, typename EventType, typename NextState>
+		template <typename EventType>
 		constexpr void handleEvent_impl(const EventType& event)
 		{
+		/*	auto lambda = [&event](const auto& curState) -> auto
+				{
+					using curStateType = decltype(curState);
+					using 
+				};
+
+			auto curStateHolder = std::visit(lambda, statesVariant);*/
 			// auto currenState = ...
-			tryCallOnExit(State, event);
+		//	tryCallOnExit(State, event);
 
 			// auto nextState = ...
-			tryCallOnEnter(State, event);
+		//	tryCallOnEnter(State, event);
 		}
 
 		template <typename StateType, typename EventType>
 		constexpr void tryCallOnExit(StateType& state, const EventType& event)
 		{
-			if constexpr (has_onEntry_v<StateType, EventType>)
-			{
-				state.onEnter(event);
-			}
-			else if constexpr (has_onEntryNoEventArg_v<StateType>)
-			{
-				state.onEnter();
-			}
-		}
-
-		template <typename StateType, typename EventType>
-		constexpr void tryCallOnEnter(StateType& state, const EventType& event)
-		{
 			if constexpr (has_onExit_v<StateType, EventType>)
 			{
 				state.onExit(event);
 			}
-			else if constexpr (has_onExitNoEventArg_v<StateType>)
+			else if constexpr (has_onEntryNoEventArg_v<StateType>)
 			{
 				state.onExit();
+			}
+		}
+
+		template <typename StateType, typename EventType>
+		constexpr void tryCallOnEntry(StateType& state, const EventType& event)
+		{
+			if constexpr (has_onExit_v<StateType, EventType>)
+			{
+				state.onEntry(event);
+			}
+			else if constexpr (has_onExitNoEventArg_v<StateType>)
+			{
+				state.onEntry();
 			}
 		}
 	};
