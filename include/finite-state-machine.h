@@ -18,6 +18,12 @@ namespace FSM
 	template <typename StatesTuple>
 	using variantTypeFromStatesTuple_t = typename variantTypeFromStatesTuple<StatesTuple>::type;
 
+	enum class HandleEventResult
+	{
+		PROCESSED,
+		PROCESSED_SAME_STATE, // Event processed, but there is no need to change state, for e.g. StateA (EventA) -> StateA
+		NO_VALID_TRANSITION
+	};
 
 	template <typename Transitions_Table, typename InitialState = void>
 	class StateMachine
@@ -63,28 +69,40 @@ namespace FSM
 		states_variant_type statesVariant;
 
 		template <typename EventTriggerType>
-		constexpr void handleEvent_impl(const EventTriggerType& event)
+		constexpr HandleEventResult handleEvent_impl(const EventTriggerType& event)
 		{
-			auto lambda = [this, &event](const auto& curState)
+			auto lambda = [this, &event](const auto& curState) -> HandleEventResult
 				{
 					using cur_state_type = std::decay_t<decltype(curState)>;
 					using next_state_type = getNextStateFromTransitionsTable_t<transitions_table, cur_state_type, EventTriggerType>;
 
-					transit<next_state_type>(curState, event);
+					return transit<next_state_type>(curState, event);
 				};
 
-			std::visit(lambda, statesVariant);
+			return std::visit(lambda, statesVariant);
 		}
 
 		template <typename NextStateType, typename CurrentStateType, typename EventTriggerType>
-		constexpr void transit(CurrentStateType& currentState, const EventTriggerType& event)
+		constexpr HandleEventResult transit(CurrentStateType& currentState, const EventTriggerType& event)
 		{
-			if constexpr (!std::is_same_v<NextStateType, FSM::NoValidTransition>)
+			if constexpr (std::is_same_v<CurrentStateType, NextStateType>)
+			{
+				// TODO: Transition function
+				return HandleEventResult::PROCESSED_SAME_STATE;
+			}
+			else if constexpr (!std::is_same_v<NextStateType, FSM::NoValidTransition>)
 			{
 				tryCallOnExit(currentState, event);
 				statesVariant.emplace<NextStateType>();
 				NextStateType& nextState = std::get<NextStateType>(statesVariant);
+				// TODO: Transition function
 				tryCallOnEntry(nextState, event);
+				
+				return HandleEventResult::PROCESSED;
+			}
+			else
+			{
+				return HandleEventResult::NO_VALID_TRANSITION;
 			}
 		}
 
