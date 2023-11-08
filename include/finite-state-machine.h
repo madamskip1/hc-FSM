@@ -3,7 +3,6 @@
 #include <tuple>
 #include <variant>
 #include "transitions-table.h"
-#include <iostream>
 
 namespace FSM
 {
@@ -18,13 +17,6 @@ namespace FSM
 
 	template <typename StatesTuple>
 	using variantTypeFromStatesTuple_t = typename variantTypeFromStatesTuple<StatesTuple>::type;
-
-
-	template <typename StateType>
-	struct StateTypeHolder
-	{
-		using type = StateType;
-	};
 
 
 	template <typename TransitionsTable, typename InitialState = void>
@@ -122,6 +114,4 @@ namespace FSM
 			}
 		}
 	};
-
-	
 }

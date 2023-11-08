@@ -1,16 +1,16 @@
 #pragma once
 #include <type_traits>
 #include <tuple>
-
+#include "transition.h"
 
 namespace FSM
 {
-	struct NoValidTransition {};
-
 	template <typename... T>
-	struct TransitionsTable {
+	struct TransitionsTable
+	{
 		using transitions = std::tuple<T...>;
 	};
+
 
 	template <typename TransitionTuple, typename BeforeStateType, typename EventType>
 	static constexpr bool doTransitionMatch()
@@ -73,7 +73,8 @@ namespace FSM
 
 
 	template <typename Transitions_Table>
-	struct getStatesFromTransitionsTable {
+	struct getStatesFromTransitionsTable
+	{
 
 		template <typename T, typename ...Types>
 		struct isInTypes

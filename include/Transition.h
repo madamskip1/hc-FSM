@@ -1,4 +1,6 @@
 #pragma once
+#include <type_traits>
+
 namespace FSM
 {
 	template <typename BeforeState, typename EventTrigger, typename NextState>
@@ -13,4 +15,6 @@ namespace FSM
 		using event_type = EventTrigger;
 		using next_state_type = NextState;
 	};
+
+	struct NoValidTransition {};
 }
