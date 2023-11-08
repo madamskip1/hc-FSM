@@ -6,7 +6,7 @@
 
 namespace FSM
 {
-	template <typename States>
+	template <typename StatesTuple>
 	struct variantTypeFromStatesTuple;
 
 	template <typename ...States>
@@ -19,12 +19,12 @@ namespace FSM
 	using variantTypeFromStatesTuple_t = typename variantTypeFromStatesTuple<StatesTuple>::type;
 
 
-	template <typename TransitionsTable, typename InitialState = void>
+	template <typename Transitions_Table, typename InitialState = void>
 	class StateMachine
 	{
 	public:
-		using transitions_table = TransitionsTable;
-		using states_tuple_type = getStatesFromTransitionsTable_t<TransitionsTable>;
+		using transitions_table = Transitions_Table;
+		using states_tuple_type = getStatesFromTransitionsTable_t<Transitions_Table>;
 		using states_variant_type = variantTypeFromStatesTuple_t<states_tuple_type>;
 		using initial_state_type = std::conditional_t<
 			std::is_same_v<InitialState, void>,
@@ -46,14 +46,14 @@ namespace FSM
 			return std::holds_alternative<State>(statesVariant);
 		}
 
-		template <typename EventType>
+		template <typename EventTriggerType>
 		void handleEvent()
 		{
-			handleEvent_impl(EventType{});
+			handleEvent_impl(EventTriggerType{});
 		}
 
-		template <typename EventType>
-		void handleEvent(const EventType& event)
+		template <typename EventTriggerType>
+		void handleEvent(const EventTriggerType& event)
 		{
 			handleEvent_impl(event);
 		}
@@ -62,36 +62,36 @@ namespace FSM
 	private:
 		states_variant_type statesVariant;
 
-		template <typename EventType>
-		constexpr void handleEvent_impl(const EventType& event)
+		template <typename EventTriggerType>
+		constexpr void handleEvent_impl(const EventTriggerType& event)
 		{
 			auto lambda = [this, &event](const auto& curState)
 				{
-					using curStateType = std::decay_t<decltype(curState)>;
-					using nextStateType = getNextStateFromTransitionsTable_t<transitions_table, curStateType, EventType>;
+					using cur_state_type = std::decay_t<decltype(curState)>;
+					using next_state_type = getNextStateFromTransitionsTable_t<transitions_table, cur_state_type, EventTriggerType>;
 
-					transit<nextStateType>(curState, event);
+					transit<next_state_type>(curState, event);
 				};
 
 			std::visit(lambda, statesVariant);
 		}
 
-		template <typename NextState, typename CurrentState, typename EventType>
-		constexpr void transit(CurrentState& currentState, const EventType& event)
+		template <typename NextStateType, typename CurrentStateType, typename EventTriggerType>
+		constexpr void transit(CurrentStateType& currentState, const EventTriggerType& event)
 		{
-			if constexpr (!std::is_same_v<NextState, FSM::NoValidTransition>)
+			if constexpr (!std::is_same_v<NextStateType, FSM::NoValidTransition>)
 			{
 				tryCallOnExit(currentState, event);
-				statesVariant.emplace<NextState>();
-				NextState& nextState = std::get<NextState>(statesVariant);
+				statesVariant.emplace<NextStateType>();
+				NextStateType& nextState = std::get<NextStateType>(statesVariant);
 				tryCallOnEntry(nextState, event);
 			}
 		}
 
-		template <typename StateType, typename EventType>
-		constexpr void tryCallOnExit(StateType& state, const EventType& event)
+		template <typename StateType, typename EventTriggerType>
+		constexpr void tryCallOnExit(StateType& state, const EventTriggerType& event)
 		{
-			if constexpr (has_onExit_v<StateType, EventType>)
+			if constexpr (has_onExit_v<StateType, EventTriggerType>)
 			{
 				state.onExit(event);
 			}
@@ -101,10 +101,10 @@ namespace FSM
 			}
 		}
 
-		template <typename StateType, typename EventType>
-		constexpr void tryCallOnEntry(StateType& state, const EventType& event)
+		template <typename StateType, typename EventTriggerType>
+		constexpr void tryCallOnEntry(StateType& state, const EventTriggerType& event)
 		{
-			if constexpr (has_onEntry_v<StateType, EventType>)
+			if constexpr (has_onEntry_v<StateType, EventTriggerType>)
 			{
 				state.onEntry(event);
 			}
