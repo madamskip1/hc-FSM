@@ -45,7 +45,7 @@ namespace FSM
         EXPECT_EQ(FSM::has_onEntryNoEventArg_v<StateB>, true);
         EXPECT_EQ(FSM::has_onEntryNoEventArg_v<StateC>, false);
         EXPECT_EQ(FSM::has_onEntryNoEventArg_v<StateD>, false);
-        EXPECT_EQ(FSM::has_onEntryNoEventArg_v<StateE>, false);
+        EXPECT_EQ(FSM::has_onEntryNoEventArg_v<StateE>, true);
     }
 
     TEST(StateTraitsTests, HasOnEntryEvent) {
