@@ -3,6 +3,9 @@
 #include <tuple>
 #include <variant>
 #include "transitions-table.h"
+#include "state.h"
+#include <typeindex>
+#include <typeinfo>
 
 namespace FSM
 {
@@ -43,7 +46,7 @@ namespace FSM
 		template <typename NewState>
 		void forceTransition()
 		{
-			statesVariant.emplace<NewState>();
+			statesVariant.template emplace<NewState>();
 		};
 
 		template <typename State>
@@ -53,15 +56,15 @@ namespace FSM
 		}
 
 		template <typename EventTriggerType>
-		void handleEvent()
+		HandleEventResult handleEvent()
 		{
-			handleEvent_impl(EventTriggerType{});
+			return handleEvent_impl(EventTriggerType{});
 		}
 
 		template <typename EventTriggerType>
-		void handleEvent(const EventTriggerType& event)
+		HandleEventResult handleEvent(const EventTriggerType& event)
 		{
-			handleEvent_impl(event);
+			return handleEvent_impl(event);
 		}
 
 
@@ -85,7 +88,7 @@ namespace FSM
 		template <typename NextStateType, typename CurrentStateType, typename EventTriggerType>
 		constexpr HandleEventResult transit(CurrentStateType& currentState, const EventTriggerType& event)
 		{
-			if constexpr (std::is_same_v<CurrentStateType, NextStateType>)
+			if constexpr (std::is_same_v<std::decay_t<CurrentStateType>, NextStateType>)
 			{
 				// TODO: Transition function
 				return HandleEventResult::PROCESSED_SAME_STATE;
@@ -93,7 +96,7 @@ namespace FSM
 			else if constexpr (!std::is_same_v<NextStateType, FSM::NoValidTransition>)
 			{
 				tryCallOnExit(currentState, event);
-				statesVariant.emplace<NextStateType>();
+				statesVariant.template emplace<NextStateType>();
 				NextStateType& nextState = std::get<NextStateType>(statesVariant);
 				// TODO: Transition function
 				tryCallOnEntry(nextState, event);
