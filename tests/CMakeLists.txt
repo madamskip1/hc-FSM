@@ -2,6 +2,7 @@
 cmake_minimum_required(VERSION 3.11)
 project(YourProjectName)
 
+SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 macro(add_unit_test testname)
     add_executable(${testname} ${testname}.cpp)
