@@ -29,4 +29,4 @@ enable_testing()
 
 add_unit_test(state_tests)
 add_unit_test(transition_tests)
-add_unit_test(test_gtest)
+add_unit_test(state_machine_tests)
