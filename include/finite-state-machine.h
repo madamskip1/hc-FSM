@@ -70,6 +70,19 @@ namespace FSM
 			return std::holds_alternative<State>(statesVariant);
 		}
 
+		template <typename State, typename InnerState, typename ...InnerStates>
+		constexpr bool isInState()
+		{
+			if (std::holds_alternative<State>(statesVariant))
+			{
+				return std::get<State>(statesVariant).template isInState<InnerState, InnerStates...>();
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		template <typename EventTriggerType>
 		HandleEventResult handleEvent()
 		{
@@ -96,19 +109,22 @@ namespace FSM
 
 					if constexpr (isStateMachine<cur_state_type>::value)
 					{
+						std::cout << "Wchodzimy niżej\n";
 						auto innerTransitionResult = curState.handleEvent(event);
 						if (innerTransitionResult == HandleEventResult::NO_VALID_TRANSITION)
 						{
+							std::cout << "No valid transition\n";
 							return HandleEventResult::NO_VALID_TRANSITION;
 						}
 						else if (innerTransitionResult == HandleEventResult::PROCESSED ||
 							innerTransitionResult == HandleEventResult::PROCESSED_SAME_STATE ||
 							innerTransitionResult == HandleEventResult::PROCESSED_INNER_STATE_MACHINE)
 						{
+							std::cout << "Processed inner state machine\n";
 							return HandleEventResult::PROCESSED_INNER_STATE_MACHINE;
 						}
 					}
-
+					std::cout << "Wchodzimy w transit\n";
 					using next_state_type = getNextStateFromTransitionsTable_t<transitions_table, cur_state_type, EventTriggerType>;
 					return transit<next_state_type>(curState, event);
 				};
@@ -119,6 +135,8 @@ namespace FSM
 		template <typename NextStateType, typename CurrentStateType, typename EventTriggerType>
 		constexpr HandleEventResult transit(CurrentStateType& currentState, const EventTriggerType& event)
 		{
+			std::cout << "Current " << std::type_index(typeid(CurrentStateType)).name() << "\n";
+			std::cout << "nextType: " << std::type_index(typeid(NextStateType)).name() << "\n";
 			if constexpr (std::is_same_v<std::decay_t<CurrentStateType>, NextStateType>)
 			{
 				// TODO: Transition function

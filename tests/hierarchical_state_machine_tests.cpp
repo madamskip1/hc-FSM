@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "finite-state-machine.h"
 #include "state.h"
+#include <iostream>
 
 struct StateA {};
 struct StateB {};
@@ -26,6 +27,33 @@ namespace FSM
 
         EXPECT_EQ(isStateMachine<InnerStateMachine>::value, true);
         EXPECT_EQ(isStateMachine_v<InnerStateMachine>, true);
+    }
+
+    TEST(HierarchicalStateMachine, isInState_Inner)
+    {
+        using InnerStateTransitions = FSM::TransitionsTable<
+            FSM::Transition<StateInnerA, EventA, StateInnerB>,
+            FSM::Transition<StateInnerB, EventB, FSM::ExitState>
+            >;
+        using InnerStateMachine = FSM::StateMachine<InnerStateTransitions>;
+
+        using Transitions = FSM::TransitionsTable <
+            FSM::Transition<StateA, EventA, InnerStateMachine>,
+            FSM::Transition<InnerStateMachine, EventB, StateB>
+        >;
+        auto mainStateMachine = FSM::StateMachine<Transitions>{};
+        EXPECT_EQ(mainStateMachine.isInState<StateA>(), true);
+        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), false);
+        auto isInInnerStateResult1 = mainStateMachine.isInState<InnerStateMachine, StateInnerA>();
+        EXPECT_EQ(isInInnerStateResult1, false);
+
+        mainStateMachine.forceTransition<InnerStateMachine>();
+        EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
+        auto isInInnerStateResult2 = mainStateMachine.isInState<InnerStateMachine, StateInnerA>();
+        EXPECT_EQ(isInInnerStateResult2, true);
     }
 
     TEST(HierarchicalStateMachineTests, SimpleHierarchicalStateMachine)
@@ -93,4 +121,6 @@ namespace FSM
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
         EXPECT_EQ(handleEventResult2, FSM::HandleEventResult::NO_VALID_TRANSITION);
     }
+
+
 }
