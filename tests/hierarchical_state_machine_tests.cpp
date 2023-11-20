@@ -28,7 +28,7 @@ namespace FSM
         EXPECT_EQ(isStateMachine_v<InnerStateMachine>, true);
     }
 
-    TEST(HierarchicalStateMachineTests, SQEQW)
+    TEST(HierarchicalStateMachineTests, SimpleHierarchicalStateMachine)
     {
         using InnerStateTransitions = FSM::TransitionsTable<
             FSM::Transition<StateInnerA, EventA, StateInnerB>,
@@ -62,5 +62,35 @@ namespace FSM
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), true);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), false);
         EXPECT_EQ(handleEventResult3, FSM::HandleEventResult::PROCESSED);
+    }
+
+    TEST(HierarchicalStateMachineTests, NoValidTransitionInInnerStateMachine)
+    {
+        using InnerStateTransitions = FSM::TransitionsTable<
+            FSM::Transition<StateInnerA, EventB, FSM::ExitState>
+            >;
+        using InnerStateMachine = FSM::StateMachine<InnerStateTransitions>;
+
+        using Transitions = FSM::TransitionsTable <
+            FSM::Transition<StateA, EventA, InnerStateMachine>,
+            FSM::Transition<InnerStateMachine, EventB, StateB>
+        >;
+
+        auto mainStateMachine = FSM::StateMachine<Transitions>{};
+        EXPECT_EQ(mainStateMachine.isInState<StateA>(), true);
+        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), false);
+
+        auto handleEventResult1 = mainStateMachine.handleEvent<EventA>();
+        EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
+        EXPECT_EQ(handleEventResult1, FSM::HandleEventResult::PROCESSED);
+
+        auto handleEventResult2 = mainStateMachine.handleEvent<EventA>();
+        EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
+        EXPECT_EQ(handleEventResult2, FSM::HandleEventResult::NO_VALID_TRANSITION);
     }
 }
