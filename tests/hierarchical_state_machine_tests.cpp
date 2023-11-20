@@ -132,5 +132,60 @@ namespace FSM
         EXPECT_EQ(handleEventResult2, FSM::HandleEventResult::NO_VALID_TRANSITION);
     }
 
+    TEST(HierarchicalStateMachineTests, MultiLayerSM)
+    {
+        using InnerStateTransitions3 = FSM::TransitionsTable<
+            FSM::Transition<StateInnerA, EventA, FSM::ExitState>
+        >;
+        using InnerStateMachine3 = FSM::StateMachine<InnerStateTransitions3>;
 
+        using InnerStateTransitions2 = FSM::TransitionsTable<
+            FSM::Transition<StateInnerA, EventA, InnerStateMachine3>,
+            FSM::Transition<InnerStateMachine3, EventA, StateInnerB>,
+            FSM::Transition<StateInnerB, EventB, FSM::ExitState>
+        >;
+        using InnerStateMachine2 = FSM::StateMachine<InnerStateTransitions2>;
+
+        using InnerStateTransitions1 = FSM::TransitionsTable<
+            FSM::Transition<StateInnerA, EventA, InnerStateMachine2>,
+            FSM::Transition<InnerStateMachine2, EventB, FSM::ExitState>
+        >;
+        using InnerStateMachine1 = FSM::StateMachine<InnerStateTransitions1>;
+
+        using Transitions = FSM::TransitionsTable<
+            FSM::Transition<StateA, EventA, InnerStateMachine1>,
+            FSM::Transition<InnerStateMachine1, EventB, StateB>
+        >;
+
+        auto stateMachine = FSM::StateMachine<Transitions>{};
+        EXPECT_EQ(stateMachine.isInState<StateA>(), true);
+
+        auto handleEventResult1 = stateMachine.handleEvent<EventA>();
+        EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
+        auto isInInnerStateResult1 = stateMachine.isInState<InnerStateMachine1, StateInnerA>();
+        EXPECT_EQ(isInInnerStateResult1, true);
+        EXPECT_EQ(handleEventResult1, FSM::HandleEventResult::PROCESSED);
+
+        auto handleEventResult2 = stateMachine.handleEvent<EventA>();
+        EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
+        auto isInInnerStateResult2 = stateMachine.isInState<InnerStateMachine1, InnerStateMachine2, StateInnerA>();
+        EXPECT_EQ(isInInnerStateResult2, true);
+        EXPECT_EQ(handleEventResult2, FSM::HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+
+        auto handleEventResult3 = stateMachine.handleEvent<EventA>();
+        EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
+        auto isInInnerStateResult3 = stateMachine.isInState<InnerStateMachine1, InnerStateMachine2, InnerStateMachine3, StateInnerA>();
+        EXPECT_EQ(isInInnerStateResult3, true);
+        EXPECT_EQ(handleEventResult3, FSM::HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+        
+        auto handleEventResult4 = stateMachine.handleEvent<EventA>();
+        EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
+        auto isInInnerStateResult4 = stateMachine.isInState<InnerStateMachine1, InnerStateMachine2, StateInnerB>();
+        EXPECT_EQ(isInInnerStateResult4, true);
+        EXPECT_EQ(handleEventResult4, FSM::HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+
+        auto handleEventResult5 = stateMachine.handleEvent<EventB>();
+        EXPECT_EQ(stateMachine.isInState<StateB>(), true);
+        EXPECT_EQ(handleEventResult5, FSM::HandleEventResult::PROCESSED);
+    }
 }
