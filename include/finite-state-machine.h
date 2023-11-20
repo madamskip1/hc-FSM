@@ -64,6 +64,12 @@ namespace FSM
 			statesVariant.template emplace<NewState>();
 		};
 
+		template <typename State, typename InnerState, typename ...InnerStates>
+		void forceTransition()
+		{
+			std::get<State>(statesVariant).template forceTransition<InnerState, InnerStates...>();
+		}
+
 		template <typename State>
 		constexpr bool isInState()
 		{
