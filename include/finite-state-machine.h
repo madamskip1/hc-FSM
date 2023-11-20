@@ -73,14 +73,15 @@ namespace FSM
 		template <typename State, typename InnerState, typename ...InnerStates>
 		constexpr bool isInState()
 		{
-			if (std::holds_alternative<State>(statesVariant))
+			if  (std::holds_alternative<State>(statesVariant))
 			{
-				return std::get<State>(statesVariant).template isInState<InnerState, InnerStates...>();
+				if constexpr (isStateMachine_v<State>)
+				{
+					return std::get<State>(statesVariant).template isInState<InnerState, InnerStates...>();
+				}
 			}
-			else
-			{
-				return false;
-			}
+
+			return false;
 		}
 
 		template <typename EventTriggerType>
