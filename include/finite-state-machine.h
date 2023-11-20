@@ -73,14 +73,13 @@ namespace FSM
 		template <typename State, typename InnerState, typename ...InnerStates>
 		constexpr bool isInState()
 		{
-			if  (std::holds_alternative<State>(statesVariant))
+			if constexpr (isStateMachine_v<State>)
 			{
-				if constexpr (isStateMachine_v<State>)
+				if  (std::holds_alternative<State>(statesVariant))
 				{
 					return std::get<State>(statesVariant).template isInState<InnerState, InnerStates...>();
 				}
 			}
-
 			return false;
 		}
 
