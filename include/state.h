@@ -5,6 +5,8 @@ namespace FSM
 {
 	struct State {};
 
+	struct ExitState : public State {};
+
 	/* has_onEntry trait */
 
 	template <typename StateType, typename EventType, typename = void>
