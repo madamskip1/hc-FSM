@@ -128,7 +128,16 @@ namespace FSM
 					}
 
 					using next_state_type = getNextStateFromTransitionsTable_t<transitions_table, cur_state_type, EventTriggerType>;
-					return transit<next_state_type>(curState, event);
+					auto transitResult = transit<next_state_type>(curState, event);
+
+					if constexpr (hasAutomaticTransition_v<transitions_table, next_state_type>)
+					{
+						return handleEvent(AUTOMATIC_TRANSITION{});
+					}
+					else
+					{
+						return transitResult;
+					}
 				};
 
 			return std::visit(lambda, statesVariant);
@@ -154,7 +163,7 @@ namespace FSM
 				NextStateType& nextState = std::get<NextStateType>(statesVariant);
 				// TODO: Transition function
 				tryCallOnEntry(nextState, event);
-				
+
 				return HandleEventResult::PROCESSED;
 			}
 			else

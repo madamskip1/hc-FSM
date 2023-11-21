@@ -8,6 +8,7 @@ namespace FSM
     struct StateA {};
     struct StateB {};
     struct StateC {};
+    struct StateD {};
     struct EventA {};
     struct EventB {};
 
@@ -29,5 +30,40 @@ namespace FSM
         auto hasAutomaticTransitionFromStateB_v = hasAutomaticTransition_v<transitions_table, StateB>;
         EXPECT_EQ(hasAutomaticTransitionFromStateB, true);
         EXPECT_EQ(hasAutomaticTransitionFromStateB_v, true);
+    }
+
+    TEST(AutomaticTransitionTests, SimpleAutomaticTransition)
+    {
+        using transition1 = Transition<StateA, EventA, StateB>;
+        using transition2 = Transition<StateB, AUTOMATIC_TRANSITION, StateC>;
+        using transitions_table = TransitionsTable<
+            transition1,
+            transition2
+        >;   
+
+        auto stateMachine = StateMachine<transitions_table, StateA>{};
+        EXPECT_EQ(stateMachine.isInState<StateA>(), true);
+        
+        stateMachine.handleEvent(EventA{});
+        EXPECT_EQ(stateMachine.isInState<StateB>(), false);
+        EXPECT_EQ(stateMachine.isInState<StateC>(), true);
+    }
+
+    TEST(AutomaticTransitionTests, FewAutomaticTransitionsInARow)
+    {
+        using transition1 = Transition<StateA, EventA, StateB>;
+        using transition2 = Transition<StateB, AUTOMATIC_TRANSITION, StateC>;
+        using transition3 = Transition<StateC, AUTOMATIC_TRANSITION, StateD>;
+        using transitions_table = TransitionsTable<
+            transition1,
+            transition2,
+            transition3
+        >;
+
+        auto stateMachine = StateMachine<transitions_table, StateA>{};
+        EXPECT_EQ(stateMachine.isInState<StateA>(), true);
+
+        stateMachine.handleEvent(EventA{});
+        EXPECT_EQ(stateMachine.isInState<StateD>(), true);
     }
 }
