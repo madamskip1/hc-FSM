@@ -147,7 +147,7 @@ namespace FSM
 				tryCallOnExit(currentState, event);
 				return HandleEventResult::EXIT_INNER_STATE_MACHINE;
 			}
-			else if constexpr (!std::is_same_v<NextStateType, FSM::NoValidTransition>)
+			else if constexpr (!std::is_same_v<NextStateType, FSM::NO_VALID_TRANSITION>)
 			{
 				tryCallOnExit(currentState, event);
 				statesVariant.template emplace<NextStateType>();

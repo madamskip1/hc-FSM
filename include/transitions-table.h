@@ -58,7 +58,7 @@ namespace FSM
 			using type = std::conditional_t<
 				doTransitionMatch<LastTransition, BeforeStateType, EventTriggerType>(),
 				typename LastTransition::next_state_type,
-				NoValidTransition
+				NO_VALID_TRANSITION
 			>;
 		};
 
