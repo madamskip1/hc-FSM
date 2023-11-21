@@ -85,6 +85,41 @@ namespace FSM
         EXPECT_EQ(isInInnerStateResult2, true);
     }
 
+    TEST(HierarchicalStateMachineTests, NoValidTransition_Inner)
+    {
+        using InnerStateTransitions = FSM::TransitionsTable<
+            FSM::Transition<StateInnerA, EventB, FSM::ExitState>
+            >;
+        using InnerStateMachine = FSM::StateMachine<InnerStateTransitions>;
+
+        using Transitions = FSM::TransitionsTable <
+            FSM::Transition<StateA, EventA, InnerStateMachine>,
+            FSM::Transition<InnerStateMachine, EventB, StateB>
+        >;
+
+        auto mainStateMachine = FSM::StateMachine<Transitions>{};
+        EXPECT_EQ(mainStateMachine.isInState<StateA>(), true);
+        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), false);
+
+        auto handleEventResult1 = mainStateMachine.handleEvent<EventA>();
+        EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
+        auto isInInnerStateResult1 = mainStateMachine.isInState<InnerStateMachine, StateInnerA>();
+        EXPECT_EQ(isInInnerStateResult1, true);
+        EXPECT_EQ(handleEventResult1, FSM::HandleEventResult::PROCESSED);
+        
+
+        auto handleEventResult2 = mainStateMachine.handleEvent<EventA>();
+        EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
+        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
+        auto isInInnerStateResult2 = mainStateMachine.isInState<InnerStateMachine, StateInnerA>();
+        EXPECT_EQ(isInInnerStateResult2, true);
+        EXPECT_EQ(handleEventResult2, FSM::HandleEventResult::NO_VALID_TRANSITION);
+    }
+
     TEST(HierarchicalStateMachineTests, SimpleHierarchicalStateMachine)
     {
         using InnerStateTransitions = FSM::TransitionsTable<
@@ -122,41 +157,6 @@ namespace FSM
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), true);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), false);
         EXPECT_EQ(handleEventResult3, FSM::HandleEventResult::PROCESSED);
-    }
-
-    TEST(HierarchicalStateMachineTests, NoValidTransition_Inner)
-    {
-        using InnerStateTransitions = FSM::TransitionsTable<
-            FSM::Transition<StateInnerA, EventB, FSM::ExitState>
-            >;
-        using InnerStateMachine = FSM::StateMachine<InnerStateTransitions>;
-
-        using Transitions = FSM::TransitionsTable <
-            FSM::Transition<StateA, EventA, InnerStateMachine>,
-            FSM::Transition<InnerStateMachine, EventB, StateB>
-        >;
-
-        auto mainStateMachine = FSM::StateMachine<Transitions>{};
-        EXPECT_EQ(mainStateMachine.isInState<StateA>(), true);
-        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
-        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), false);
-
-        auto handleEventResult1 = mainStateMachine.handleEvent<EventA>();
-        EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
-        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
-        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
-        auto isInInnerStateResult1 = mainStateMachine.isInState<InnerStateMachine, StateInnerA>();
-        EXPECT_EQ(isInInnerStateResult1, true);
-        EXPECT_EQ(handleEventResult1, FSM::HandleEventResult::PROCESSED);
-        
-
-        auto handleEventResult2 = mainStateMachine.handleEvent<EventA>();
-        EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
-        EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
-        EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
-        auto isInInnerStateResult2 = mainStateMachine.isInState<InnerStateMachine, StateInnerA>();
-        EXPECT_EQ(isInInnerStateResult2, true);
-        EXPECT_EQ(handleEventResult2, FSM::HandleEventResult::NO_VALID_TRANSITION);
     }
 
     TEST(HierarchicalStateMachineTests, MultiLayerSM)

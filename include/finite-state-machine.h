@@ -101,7 +101,6 @@ namespace FSM
 			return handleEvent_impl(event);
 		}
 
-
 	private:
 		states_variant_type statesVariant;
 
