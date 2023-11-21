@@ -17,4 +17,5 @@ namespace FSM
 	};
 
 	struct NO_VALID_TRANSITION {};
+	struct AUTOMATIC_TRANSITION {};
 }

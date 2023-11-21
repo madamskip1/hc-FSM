@@ -108,4 +108,28 @@ namespace FSM
 		EXPECT_EQ(is_same_FromStateBEventB, true);
 		EXPECT_EQ(is_same_FromStateBEventB_t, true);
 	}
+
+	TEST(TransitionTraitsTests, NextState_AutomaticTransition)
+	{
+		using transition1 = Transition<StateA, EventB, StateB>;
+		using transition2 = Transition<StateB, AUTOMATIC_TRANSITION, StateA>;
+		using transitions_table = TransitionsTable<
+			transition1,
+			transition2
+		>;
+
+		using automaticStateFromStateA = typename getNextStateAutomaticTransitionFromTransitionsTable<transitions_table, StateA>::type;
+		using automaticStateFromStateA_t = getNextStateAutomaticTransitionFromTransitionsTable_t<transitions_table, StateA>;
+		constexpr auto is_same_automaticStateFromStateA = std::is_same_v<automaticStateFromStateA, NO_VALID_TRANSITION>;
+		constexpr auto is_same_automaticStateFromStateA_t = std::is_same_v<automaticStateFromStateA_t, NO_VALID_TRANSITION>;
+		EXPECT_EQ(is_same_automaticStateFromStateA, true);
+		EXPECT_EQ(is_same_automaticStateFromStateA_t, true);
+
+		using automaticStateFromStateB = typename getNextStateAutomaticTransitionFromTransitionsTable<transitions_table, StateB>::type;
+		using automaticStateFromStateB_t = getNextStateAutomaticTransitionFromTransitionsTable_t<transitions_table, StateB>;
+		constexpr auto is_same_automaticStateFromStateB = std::is_same_v<automaticStateFromStateB, StateA>;
+		constexpr auto is_same_automaticStateFromStateB_t = std::is_same_v<automaticStateFromStateB_t, StateA>;
+		EXPECT_EQ(is_same_automaticStateFromStateB, true);
+		EXPECT_EQ(is_same_automaticStateFromStateB_t, true);
+	}
 }

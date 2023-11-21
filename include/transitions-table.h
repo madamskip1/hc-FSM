@@ -79,7 +79,20 @@ namespace FSM
 	using getNextStateFromTransitionsTable_t = typename getNextStateFromTransitionsTable<Transitions_Table, BeforeStateType, EventTriggerType>::type;
 
 	// ~getNextStateFromTransitionsTable
+
+	// getNextStateAutomaticTransitionFromTransitionsTable
+
+	template <typename Transitions_Table, typename BeforeStateType>
+	struct getNextStateAutomaticTransitionFromTransitionsTable
+	{
+		using type = typename getNextStateFromTransitionsTable<Transitions_Table, BeforeStateType, AUTOMATIC_TRANSITION>::type;
+	};
 	
+	template <typename Transitions_Table, typename BeforeStateType>
+	using getNextStateAutomaticTransitionFromTransitionsTable_t = typename getNextStateAutomaticTransitionFromTransitionsTable<Transitions_Table, BeforeStateType>::type;
+
+	// ~getNextStateAutomaticTransitionFromTransitionsTable
+
 	// getStatesFromTransitionsTable
 
 	template <typename Transitions_Table>
