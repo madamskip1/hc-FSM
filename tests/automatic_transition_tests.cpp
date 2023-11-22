@@ -67,7 +67,7 @@ namespace FSM
         EXPECT_EQ(stateMachine.isInState<StateD>(), true);
     }
 
-        TEST(AutomaticTransitionTests, InDeeperLayerAutomaticTransition)
+    TEST(AutomaticTransitionTests, InDeeperLayerAutomaticTransition)
     {
         using InnerStateTransitions3 = FSM::TransitionsTable<
             FSM::Transition<StateA, EventA, ExitState>
@@ -118,5 +118,35 @@ namespace FSM
 
         stateMachine.handleEvent(EventA{});
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
+    }
+
+    TEST(AutomaticTransitionTests, FromInnerToNextInnerWithAutomaticTransition)
+    {
+        using InnerStateTransitions2 = FSM::TransitionsTable<
+            FSM::Transition<StateA, EventA, StateB>
+        >;
+        using InnerStateMachine2 = FSM::StateMachine<InnerStateTransitions2>;
+
+         using InnerStateTransitions1 = FSM::TransitionsTable<
+            FSM::Transition<StateA, EventA, StateB>,
+            FSM::Transition<StateB, AUTOMATIC_TRANSITION, ExitState>
+            >;
+        using InnerStateMachine1 = FSM::StateMachine<InnerStateTransitions1>;
+
+        using Transitions = FSM::TransitionsTable <
+            FSM::Transition<StateA, EventA, InnerStateMachine1>,
+            FSM::Transition<InnerStateMachine1, AUTOMATIC_TRANSITION, InnerStateMachine2>
+        >;
+
+        auto stateMachine = FSM::StateMachine<Transitions, StateA>{};
+        EXPECT_EQ(stateMachine.isInState<StateA>(), true);
+
+        stateMachine.handleEvent(EventA{});
+        auto isInInnerStateMachine1StateA = stateMachine.isInState<InnerStateMachine1, StateA>();
+        EXPECT_EQ(isInInnerStateMachine1StateA, true);
+
+        stateMachine.handleEvent(EventA{});
+        auto isInInnerStateMachine2StateA = stateMachine.isInState<InnerStateMachine2, StateA>();
+        EXPECT_EQ(isInInnerStateMachine2StateA, true);
     }
 }
