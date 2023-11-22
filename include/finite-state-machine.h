@@ -110,21 +110,18 @@ namespace FSM
 		{
 			auto lambda = [this, &event](auto& currentState) -> HandleEventResult
 				{
-					
 					using cur_state_type = std::decay_t<decltype(currentState)>;
-					std::cout << "cur_state_type: " << typeid(cur_state_type).name() << std::endl;
+
 					if constexpr (isStateMachine_v<cur_state_type>)
 					{
-						std::cout << "isStateMachine_v<cur_state_type>" << std::endl;
 						auto innerTransitResult = innerStateMachineTransition(currentState, event);
-						std::cout << "innerTransitResult: " << static_cast<int>(innerTransitResult) << std::endl;
+
 						if (innerTransitResult == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE)
 						{
 							return normalTransition(currentState, AUTOMATIC_TRANSITION{});
 						}
-						if (innerTransitResult != HandleEventResult::EXIT_INNER_STATE_MACHINE)
+						else if (innerTransitResult != HandleEventResult::EXIT_INNER_STATE_MACHINE)
 						{
-							std::cout << "innerTransitResult != HandleEventResult::EXIT_INNER_STATE_MACHINE" << std::endl;
 							return innerTransitResult;
 						}
 					}
@@ -182,7 +179,7 @@ namespace FSM
 		HandleEventResult normalTransition(CurrentStateType& currentState, const EventTriggerType& event)
 		{
 			using next_state_type = getNextStateFromTransitionsTable_t<transitions_table, CurrentStateType, EventTriggerType>;
-			std::cout << "next_state_type: " << typeid(next_state_type).name() << std::endl;
+			
 			auto transitResult = transit<next_state_type>(currentState, event);
 			
 			if constexpr (!isStateMachine_v<next_state_type> && hasAutomaticTransition_v<transitions_table, next_state_type>)
