@@ -201,23 +201,25 @@ namespace FSM
 			if constexpr (hasAutomaticTransition_v<transitions_table, CurrentStateType>)
 			{
 				using next_state_type = getNextStateFromTransitionsTable_t<transitions_table, CurrentStateType, AUTOMATIC_TRANSITION>;
-				auto transitResult = transit<next_state_type, CurrentStateType, AUTOMATIC_TRANSITION>(currentState, AUTOMATIC_TRANSITION{});
 
 				if constexpr (std::is_same_v<next_state_type, ExitState>)
 				{
+					tryCallOnExit(currentState, AUTOMATIC_TRANSITION{});
 					return HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE;
 				}
-
-				if (tryAutomaticTransition(std::get<next_state_type>(statesVariant)) == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE)
+				
+				auto transitResult = transit<next_state_type, CurrentStateType, AUTOMATIC_TRANSITION>(currentState, AUTOMATIC_TRANSITION{});
+				
+				if (auto nextAutomaticTransitionsResult = tryAutomaticTransition(std::get<next_state_type>(statesVariant));
+					nextAutomaticTransitionsResult != HandleEventResult::NO_VALID_TRANSITION)
 				{
-					return HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE;
+					return nextAutomaticTransitionsResult;
 				}
-
 				return transitResult;
 			}
 			else
 			{
-				return HandleEventResult::NO_VALID_TRANSITION; // wyżej musi zwrócić Processed.
+				return HandleEventResult::NO_VALID_TRANSITION;
 			}
 		}
 
