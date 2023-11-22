@@ -40,7 +40,8 @@ namespace FSM
 		PROCESSED_SAME_STATE, // Event processed, but there is no need to change state, for e.g. StateA (EventA) -> StateA
 		PROCESSED_INNER_STATE_MACHINE,
 		NO_VALID_TRANSITION,
-		EXIT_INNER_STATE_MACHINE
+		EXIT_INNER_STATE_MACHINE,
+		EXIT_AUTOMATIC_INNER_STATE_MACHINE
 	};
 
 	template <typename Transitions_Table, typename InitialState>
@@ -107,37 +108,28 @@ namespace FSM
 		template <typename EventTriggerType>
 		constexpr HandleEventResult handleEvent_impl(const EventTriggerType& event)
 		{
-			auto lambda = [this, &event](auto& curState) -> HandleEventResult
+			auto lambda = [this, &event](auto& currentState) -> HandleEventResult
 				{
 					
-					using cur_state_type = std::decay_t<decltype(curState)>;
-
-					if constexpr (isStateMachine<cur_state_type>::value)
+					using cur_state_type = std::decay_t<decltype(currentState)>;
+					std::cout << "cur_state_type: " << typeid(cur_state_type).name() << std::endl;
+					if constexpr (isStateMachine_v<cur_state_type>)
 					{
-						auto innerTransitionResult = curState.handleEvent(event);
-						if (innerTransitionResult == HandleEventResult::NO_VALID_TRANSITION)
+						std::cout << "isStateMachine_v<cur_state_type>" << std::endl;
+						auto innerTransitResult = innerStateMachineTransition(currentState, event);
+						std::cout << "innerTransitResult: " << static_cast<int>(innerTransitResult) << std::endl;
+						if (innerTransitResult == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE)
 						{
-							return HandleEventResult::NO_VALID_TRANSITION;
+							return normalTransition(currentState, AUTOMATIC_TRANSITION{});
 						}
-						else if (innerTransitionResult == HandleEventResult::PROCESSED ||
-							innerTransitionResult == HandleEventResult::PROCESSED_SAME_STATE ||
-							innerTransitionResult == HandleEventResult::PROCESSED_INNER_STATE_MACHINE)
+						if (innerTransitResult != HandleEventResult::EXIT_INNER_STATE_MACHINE)
 						{
-							return HandleEventResult::PROCESSED_INNER_STATE_MACHINE;
+							std::cout << "innerTransitResult != HandleEventResult::EXIT_INNER_STATE_MACHINE" << std::endl;
+							return innerTransitResult;
 						}
 					}
-
-					using next_state_type = getNextStateFromTransitionsTable_t<transitions_table, cur_state_type, EventTriggerType>;
-					auto transitResult = transit<next_state_type>(curState, event);
-
-					if constexpr (hasAutomaticTransition_v<transitions_table, next_state_type>)
-					{
-						return handleEvent(AUTOMATIC_TRANSITION{});
-					}
-					else
-					{
-						return transitResult;
-					}
+					
+					return normalTransition(currentState, event);
 				};
 
 			return std::visit(lambda, statesVariant);
@@ -169,6 +161,63 @@ namespace FSM
 			else
 			{
 				return HandleEventResult::NO_VALID_TRANSITION;
+			}
+		}
+
+		template <typename InnerStateMachineType, typename EventTriggerType>
+		constexpr HandleEventResult innerStateMachineTransition(InnerStateMachineType& innerStateMachine, const EventTriggerType& event)
+		{
+			auto innerTransitionResult = innerStateMachine.handleEvent(event);
+			if (innerTransitionResult == HandleEventResult::PROCESSED ||
+				innerTransitionResult == HandleEventResult::PROCESSED_SAME_STATE ||
+				innerTransitionResult == HandleEventResult::PROCESSED_INNER_STATE_MACHINE)
+			{
+				return HandleEventResult::PROCESSED_INNER_STATE_MACHINE;
+			}
+			
+			return innerTransitionResult;
+		}
+
+		template <typename CurrentStateType, typename EventTriggerType>
+		HandleEventResult normalTransition(CurrentStateType& currentState, const EventTriggerType& event)
+		{
+			using next_state_type = getNextStateFromTransitionsTable_t<transitions_table, CurrentStateType, EventTriggerType>;
+			std::cout << "next_state_type: " << typeid(next_state_type).name() << std::endl;
+			auto transitResult = transit<next_state_type>(currentState, event);
+			
+			if constexpr (!isStateMachine_v<next_state_type> && hasAutomaticTransition_v<transitions_table, next_state_type>)
+			{
+				return tryAutomaticTransition(std::get<next_state_type>(statesVariant));
+			}
+			else
+			{
+				return transitResult;
+			}
+		}
+
+		template <typename CurrentStateType>
+		constexpr HandleEventResult tryAutomaticTransition(CurrentStateType& currentState)
+		{
+			if constexpr (hasAutomaticTransition_v<transitions_table, CurrentStateType>)
+			{
+				using next_state_type = getNextStateFromTransitionsTable_t<transitions_table, CurrentStateType, AUTOMATIC_TRANSITION>;
+				auto transitResult = transit<next_state_type, CurrentStateType, AUTOMATIC_TRANSITION>(currentState, AUTOMATIC_TRANSITION{});
+
+				if constexpr (std::is_same_v<next_state_type, ExitState>)
+				{
+					return HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE;
+				}
+
+				if (tryAutomaticTransition(std::get<next_state_type>(statesVariant)) == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE)
+				{
+					return HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE;
+				}
+
+				return transitResult;
+			}
+			else
+			{
+				return HandleEventResult::NO_VALID_TRANSITION; // wyżej musi zwrócić Processed.
 			}
 		}
 
