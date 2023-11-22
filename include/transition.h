@@ -16,5 +16,6 @@ namespace FSM
 		using next_state_type = NextStateType;
 	};
 
-	struct NoValidTransition {};
+	struct NO_VALID_TRANSITION {};
+	struct AUTOMATIC_TRANSITION {};
 }

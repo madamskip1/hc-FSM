@@ -103,8 +103,8 @@ namespace FSM
 
 		using nextFromStateBEventB = typename getNextStateFromTransitionsTable<transitions_table, StateB, EventB>::type;
 		using nextFromStateBEventB_t = getNextStateFromTransitionsTable_t<transitions_table, StateB, EventB>;
-		constexpr auto is_same_FromStateBEventB = std::is_same_v<NoValidTransition, nextFromStateBEventB>;
-		constexpr auto is_same_FromStateBEventB_t = std::is_same_v<NoValidTransition, nextFromStateBEventB_t>;
+		constexpr auto is_same_FromStateBEventB = std::is_same_v<NO_VALID_TRANSITION, nextFromStateBEventB>;
+		constexpr auto is_same_FromStateBEventB_t = std::is_same_v<NO_VALID_TRANSITION, nextFromStateBEventB_t>;
 		EXPECT_EQ(is_same_FromStateBEventB, true);
 		EXPECT_EQ(is_same_FromStateBEventB_t, true);
 	}

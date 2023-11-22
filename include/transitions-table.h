@@ -43,6 +43,19 @@ namespace FSM
 
 	// ~hasTransition
 
+	// hasAutomaticTransition
+
+	template <typename Transitions_Table, typename BeforeStateType>
+	struct hasAutomaticTransition
+	{
+		static constexpr bool value = hasTransition_v<Transitions_Table, BeforeStateType, AUTOMATIC_TRANSITION>;
+	};
+	
+	template <typename Transitions_Table, typename BeforeStateType>
+	static constexpr bool hasAutomaticTransition_v = hasAutomaticTransition<Transitions_Table, BeforeStateType>::value;
+
+	// ~hasAutomaticTransition
+
 	// getNextStateFromTransitionsTable
 
 	template <typename Transitions_Table, typename BeforeStateType, typename EventTriggerType>
@@ -58,7 +71,7 @@ namespace FSM
 			using type = std::conditional_t<
 				doTransitionMatch<LastTransition, BeforeStateType, EventTriggerType>(),
 				typename LastTransition::next_state_type,
-				NoValidTransition
+				NO_VALID_TRANSITION
 			>;
 		};
 
@@ -79,7 +92,7 @@ namespace FSM
 	using getNextStateFromTransitionsTable_t = typename getNextStateFromTransitionsTable<Transitions_Table, BeforeStateType, EventTriggerType>::type;
 
 	// ~getNextStateFromTransitionsTable
-	
+
 	// getStatesFromTransitionsTable
 
 	template <typename Transitions_Table>
