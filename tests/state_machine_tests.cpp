@@ -15,8 +15,8 @@ namespace FSM
         using SimpleTuple = std::tuple<int, float, double>;
         using SimpleVariant = typename variantTypeFromStatesTuple<SimpleTuple>::type;
         using SimpleVariant_t = variantTypeFromStatesTuple_t<SimpleTuple>;
-        auto is_same_simple = std::is_same_v<SimpleVariant, std::variant<int, float, double>>;
-        auto is_same_simple_t = std::is_same_v<SimpleVariant_t, std::variant<int, float, double>>;
+        auto is_same_simple = std::is_same_v<SimpleVariant, std::variant<std::monostate, int, float, double>>;
+        auto is_same_simple_t = std::is_same_v<SimpleVariant_t, std::variant<std::monostate, int, float, double>>;
         EXPECT_EQ(is_same_simple, true);
         EXPECT_EQ(is_same_simple_t, true);
 
@@ -31,8 +31,8 @@ namespace FSM
         using StatesTuple = std::tuple<StateA, StateB>;
         using StatesVariant = typename variantTypeFromStatesTuple<StatesTuple>::type;
         using StatesVariant_t = variantTypeFromStatesTuple_t<StatesTuple>;
-        auto is_same_states = std::is_same_v<StatesVariant, std::variant<StateA, StateB>>;
-        auto is_same_states_t = std::is_same_v<StatesVariant_t, std::variant<StateA, StateB>>;
+        auto is_same_states = std::is_same_v<StatesVariant, std::variant<std::monostate, StateA, StateB>>;
+        auto is_same_states_t = std::is_same_v<StatesVariant_t, std::variant<std::monostate, StateA, StateB>>;
         EXPECT_EQ(is_same_states, true);
         EXPECT_EQ(is_same_states_t, true);
     }

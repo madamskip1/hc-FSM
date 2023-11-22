@@ -15,10 +15,16 @@ namespace FSM
 	template <typename StatesTuple>
 	struct variantTypeFromStatesTuple;
 
+	template <>
+	struct variantTypeFromStatesTuple<std::tuple<>>
+	{
+		using type = std::variant<>;
+	};
+
 	template <typename ...States>
 	struct variantTypeFromStatesTuple<std::tuple<States...>>
 	{
-		using type = std::variant<States...>;
+		using type = std::variant<std::monostate, States...>;
 	};
 
 	template <typename StatesTuple>
@@ -57,7 +63,10 @@ namespace FSM
 			InitialState
 		>;
 
-		StateMachine() : statesVariant{ initial_state_type{} } {};
+		StateMachine() 
+		{
+			statesVariant.template emplace<initial_state_type>();
+		};
 
 		template <typename NewState>
 		void forceTransition()
