@@ -150,7 +150,7 @@ namespace FSM
 			}
 			else
 			{
-				using next_state_type = typename Transition::next_state_type;
+				using next_state_type = getNextState_t<Transition>;
 				if constexpr (std::is_same_v<std::decay_t<CurrentStateType>, next_state_type>)
 				{
 					// TODO: Transition function
@@ -196,13 +196,13 @@ namespace FSM
 
 			if constexpr (!std::is_same_v<transition, NO_VALID_TRANSITION>)
 			{
-				using next_state_type = typename transition::next_state_type;
+				using next_state_type = getNextState_t<transition>;
 				if constexpr (!isStateMachine_v<next_state_type> && hasAutomaticTransition_v<transitions_table, next_state_type>)
 				{
 					return tryAutomaticTransition(std::get<next_state_type>(statesVariant));
 				}
 			}
-			
+
 			return transitResult;
 		}
 
@@ -212,7 +212,7 @@ namespace FSM
 			if constexpr (hasAutomaticTransition_v<transitions_table, CurrentStateType>)
 			{
 				using transition = getTransition_t<transitions_table, CurrentStateType, AUTOMATIC_TRANSITION>;
-				using next_state_type = typename transition::next_state_type;
+				using next_state_type = getNextState_t<transition>;
 
 				if constexpr (std::is_same_v<next_state_type, ExitState>)
 				{

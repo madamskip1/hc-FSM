@@ -13,6 +13,44 @@ struct EventB : Event {};
 
 namespace FSM
 {
+	TEST(TransitionTraitsTests, Transition)
+	{
+		using transition = Transition<StateA, EventB, StateB>;
+
+		constexpr auto is_same_transition_before_state_type = std::is_same_v<StateA, typename transition::before_state_type>;
+		EXPECT_EQ(is_same_transition_before_state_type, true);
+
+		constexpr auto is_same_transition_event_type = std::is_same_v<EventB, typename transition::event_type>;
+		EXPECT_EQ(is_same_transition_event_type, true);
+
+		constexpr auto is_same_transition_next_state_type = std::is_same_v<StateB, typename transition::next_state_type>;
+		EXPECT_EQ(is_same_transition_next_state_type, true);
+	}
+
+	TEST(TransitionTraitsTests, getBeforeState)
+	{
+		using transition = Transition<StateA, EventB, StateB>;
+
+		constexpr auto is_same_transition_before_state_type = std::is_same_v<StateA, getBeforeState_t<transition>>;
+		EXPECT_EQ(is_same_transition_before_state_type, true);
+	}
+
+	TEST(TransitionTraitsTests, getNextState)
+	{
+		using transition = Transition<StateA, EventB, StateB>;
+
+		constexpr auto is_same_transition_next_state_type = std::is_same_v<StateB, getNextState_t<transition>>;
+		EXPECT_EQ(is_same_transition_next_state_type, true);
+	}
+
+	TEST(TransitionTraitsTests, getEvent)
+	{
+		using transition = Transition<StateA, EventB, StateB>;
+
+		constexpr auto is_same_transition_event_type = std::is_same_v<EventB, getEvent_t<transition>>;
+		EXPECT_EQ(is_same_transition_event_type, true);
+	}
+
 	TEST(TransitionTraitsTests, DoTransitionMatch)
 	{
 		using transition = Transition<StateA, EventB, StateB>;

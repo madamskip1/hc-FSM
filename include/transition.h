@@ -3,6 +3,9 @@
 
 namespace FSM
 {
+	struct NO_VALID_TRANSITION {};
+	struct AUTOMATIC_TRANSITION {};
+
 	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType>
 	struct Transition
 	{
@@ -16,6 +19,30 @@ namespace FSM
 		using next_state_type = NextStateType;
 	};
 
-	struct NO_VALID_TRANSITION {};
-	struct AUTOMATIC_TRANSITION {};
+	template <typename TransitionType>
+	struct getBeforeState
+	{
+		using type = typename TransitionType::before_state_type;
+	};
+
+	template <typename TransitionType>
+	using getBeforeState_t = typename getBeforeState<TransitionType>::type;
+
+	template <typename TransitionType>
+	struct getNextState
+	{
+		using type = typename TransitionType::next_state_type;
+	};
+
+	template <typename TransitionType>
+	using getNextState_t = typename getNextState<TransitionType>::type;
+
+	template <typename TransitionType>
+	struct getEvent
+	{
+		using type = typename TransitionType::event_type;
+	};
+
+	template <typename TransitionType>
+	using getEvent_t = typename getEvent<TransitionType>::type;
 }
