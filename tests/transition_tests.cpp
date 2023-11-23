@@ -108,35 +108,4 @@ namespace FSM
 		EXPECT_EQ(is_same_transtionFromStateBEventB, true);
 		EXPECT_EQ(is_same_transtionFromStateBEventB_t, true);
 	}
-
-	TEST(TransitionTraitsTests, NextState)
-	{
-		using transition1 = Transition<StateA, EventB, StateB>;
-		using transition2 = Transition<StateB, EventA, StateA>;
-		using transitions_table = TransitionsTable<
-			transition1,
-			transition2
-		>;
-
-		using nextFromStateAEventB = typename getNextStateFromTransitionsTable<transitions_table, StateA, EventB>::type;
-		using nextFromStateAEventB_t = getNextStateFromTransitionsTable_t<transitions_table, StateA, EventB>;
-		constexpr auto is_same_FromStateAEventB = std::is_same_v<StateB, nextFromStateAEventB>;
-		constexpr auto is_same_FromStateAEventB_t = std::is_same_v<StateB, nextFromStateAEventB_t>;
-		EXPECT_EQ(is_same_FromStateAEventB, true);
-		EXPECT_EQ(is_same_FromStateAEventB_t, true);
-
-		using nextFromStateBEventA = typename getNextStateFromTransitionsTable<transitions_table, StateB, EventA>::type;
-		using nextFromStateBEventA_t = getNextStateFromTransitionsTable_t<transitions_table, StateB, EventA>;
-		constexpr auto is_same_FromStateBEventA = std::is_same_v<StateA, nextFromStateBEventA>;
-		constexpr auto is_same_FromStateBEventA_t = std::is_same_v<StateA, nextFromStateBEventA_t>;
-		EXPECT_EQ(is_same_FromStateBEventA, true);
-		EXPECT_EQ(is_same_FromStateBEventA_t, true);
-
-		using nextFromStateBEventB = typename getNextStateFromTransitionsTable<transitions_table, StateB, EventB>::type;
-		using nextFromStateBEventB_t = getNextStateFromTransitionsTable_t<transitions_table, StateB, EventB>;
-		constexpr auto is_same_FromStateBEventB = std::is_same_v<NO_VALID_TRANSITION, nextFromStateBEventB>;
-		constexpr auto is_same_FromStateBEventB_t = std::is_same_v<NO_VALID_TRANSITION, nextFromStateBEventB_t>;
-		EXPECT_EQ(is_same_FromStateBEventB, true);
-		EXPECT_EQ(is_same_FromStateBEventB_t, true);
-	}
 }

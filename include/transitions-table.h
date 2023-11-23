@@ -92,43 +92,6 @@ namespace FSM
 
 	// ~getTransition
 
-	// getNextStateFromTransitionsTable
-
-	template <typename Transitions_Table, typename BeforeStateType, typename EventTriggerType>
-	struct getNextStateFromTransitionsTable
-	{
-
-		template <typename ...Transitions>
-		struct getNextStateFromTransitionsTable_impl;
-
-		template <typename LastTransition>
-		struct getNextStateFromTransitionsTable_impl<std::tuple<LastTransition>>
-		{
-			using type = std::conditional_t<
-				doTransitionMatch<LastTransition, BeforeStateType, EventTriggerType>(),
-				typename LastTransition::next_state_type,
-				NO_VALID_TRANSITION
-			>;
-		};
-
-		template <typename Transition, typename ...RestTransitions>
-		struct getNextStateFromTransitionsTable_impl<std::tuple<Transition, RestTransitions...>>
-		{
-			using type = std::conditional_t<
-				doTransitionMatch<Transition, BeforeStateType, EventTriggerType>(),
-				typename Transition::next_state_type,
-				typename getNextStateFromTransitionsTable_impl<std::tuple<RestTransitions...>>::type
-			>;
-		};
-
-		using type = typename getNextStateFromTransitionsTable_impl<typename Transitions_Table::transitions>::type;
-	};
-
-	template <typename Transitions_Table, typename BeforeStateType, typename EventTriggerType>
-	using getNextStateFromTransitionsTable_t = typename getNextStateFromTransitionsTable<Transitions_Table, BeforeStateType, EventTriggerType>::type;
-
-	// ~getNextStateFromTransitionsTable
-
 	// getStatesFromTransitionsTable
 
 	template <typename Transitions_Table>
