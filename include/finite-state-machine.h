@@ -144,7 +144,7 @@ namespace FSM
 		template <typename Transition, typename CurrentStateType, typename EventTriggerType>
 		constexpr HandleEventResult transit(CurrentStateType& currentState, const EventTriggerType& event)
 		{
-			if constexpr (std::is_same_v<Transition, NO_VALID_TRANSITION>)
+			if constexpr (!isValidTransition_v<Transition>)
 			{
 				return HandleEventResult::NO_VALID_TRANSITION;
 			}
@@ -194,7 +194,7 @@ namespace FSM
 			using transition = getTransition_t<transitions_table, CurrentStateType, EventTriggerType>;			
 			auto transitResult = transit<transition>(currentState, event);
 
-			if constexpr (!std::is_same_v<transition, NO_VALID_TRANSITION>)
+			if constexpr (isValidTransition_v<transition>)
 			{
 				using next_state_type = getNextState_t<transition>;
 				if constexpr (!isStateMachine_v<next_state_type> && hasAutomaticTransition_v<transitions_table, next_state_type>)

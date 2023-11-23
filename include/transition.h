@@ -18,6 +18,15 @@ namespace FSM
 		using event_type = EventTriggerType;
 		using next_state_type = NextStateType;
 	};
+	
+	template <typename Transition>
+	struct isValidTransition : std::false_type {};
+
+	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType>
+	struct isValidTransition<Transition<BeforeStateType, EventTriggerType, NextStateType>> : std::true_type {};
+
+	template <typename Transition>
+	static constexpr bool isValidTransition_v = isValidTransition<Transition>::value;
 
 	template <typename TransitionType>
 	struct getBeforeState
