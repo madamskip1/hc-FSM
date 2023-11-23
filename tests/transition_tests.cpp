@@ -13,6 +13,11 @@ struct EventB : Event {};
 
 namespace FSM
 {
+	struct dummyCallableStruct
+	{
+		void operator() () {};
+	};
+
 	TEST(TransitionTraitsTests, Transition)
 	{
 		using transition = Transition<StateA, EventB, StateB>;
@@ -49,6 +54,29 @@ namespace FSM
 
 		constexpr auto is_same_transition_event_type = std::is_same_v<EventB, getEvent_t<transition>>;
 		EXPECT_EQ(is_same_transition_event_type, true);
+	}
+
+	TEST(TransitionTraitsTests, getAction)
+	{
+		using transition = Transition<StateA, EventB, StateB, dummyCallableStruct>;
+		using transitionNoAction = Transition<StateA, EventB, StateB>;
+
+		constexpr bool thereIsAction = std::is_same_v<dummyCallableStruct, getAction_t<transition>>;
+		EXPECT_EQ(thereIsAction, true);
+
+		constexpr auto noActionVoid = std::is_same_v<void, getAction_t<transitionNoAction>>;
+		EXPECT_EQ(noActionVoid, true);
+	}
+
+	TEST(TransitionTraitsTests, hasAction)
+	{
+		using transition = Transition<StateA, EventB, StateB, dummyCallableStruct>;
+		using transitionNoAction = Transition<StateA, EventB, StateB>;
+
+		EXPECT_EQ(hasAction<transition>::value, true);
+		EXPECT_EQ(hasAction_v<transition>, true);	
+		EXPECT_EQ(hasAction<transitionNoAction>::value, false);
+		EXPECT_EQ(hasAction_v<transitionNoAction>, false);
 	}
 
 	TEST(TransitionTraitsTests, DoTransitionMatch)

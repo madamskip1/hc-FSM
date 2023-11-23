@@ -6,17 +6,13 @@ namespace FSM
 	struct NO_VALID_TRANSITION {};
 	struct AUTOMATIC_TRANSITION {};
 
-	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType>
+	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Action = void>
 	struct Transition
-	{
-		// Maybe in future there will be point in forcing States to derive from FSM::State
-		/*static_assert(std::is_base_of_v<FSM::State, BeforeState>, "BeforeState must derive from FSM::State");
-		static_assert(std::is_base_of_v<FSM::Event, EventTrigger>, "EventTrigger must derive from FSM::Event");
-		static_assert(std::is_base_of_v<FSM::State, NextState>, "NextState must derive from FSM::State"); */
-		
+	{		
 		using before_state_type = BeforeStateType;
 		using event_type = EventTriggerType;
 		using next_state_type = NextStateType;
+		using action_type = Action;
 	};
 	
 	template <typename Transition>
@@ -54,4 +50,19 @@ namespace FSM
 
 	template <typename TransitionType>
 	using getEvent_t = typename getEvent<TransitionType>::type;
+
+	template <typename TransitionType>
+	struct getAction
+	{
+		using type = typename TransitionType::action_type;
+	};
+
+	template <typename TransitionType>
+	using getAction_t = typename getAction<TransitionType>::type;
+
+	template <typename TransitionType>
+	struct hasAction : std::is_invocable<getAction_t<TransitionType>> {};
+
+	template <typename TransitionType>
+	static constexpr bool hasAction_v = hasAction<TransitionType>::value;
 }
