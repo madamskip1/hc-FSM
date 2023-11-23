@@ -153,7 +153,7 @@ namespace FSM
 				using next_state_type = getNextState_t<Transition>;
 				if constexpr (std::is_same_v<std::decay_t<CurrentStateType>, next_state_type>)
 				{
-					// TODO: Transition function
+					tryCallTransitionAction<Transition>(currentState, event, currentState);
 					return HandleEventResult::PROCESSED_SAME_STATE;
 				}
 				else if constexpr (std::is_same_v<next_state_type, ExitState>)
@@ -164,11 +164,11 @@ namespace FSM
 				else
 				{
 					tryCallOnExit(currentState, event);
-					statesVariant.template emplace<next_state_type>();
-					next_state_type& nextState = std::get<next_state_type>(statesVariant);
-					// TODO: Transition function
+					next_state_type nextState;
+					tryCallTransitionAction<Transition>(currentState, event, nextState);
 					tryCallOnEntry(nextState, event);
 
+					statesVariant = std::move(nextState);
 					return HandleEventResult::PROCESSED;
 				}
 			}
@@ -258,6 +258,15 @@ namespace FSM
 			else if constexpr (has_onEntryNoEventArg_v<StateType>)
 			{
 				state.onEntry();
+			}
+		}
+
+		template <typename Transition, typename StateBeforeType, typename EventTriggerType, typename StateAfterType>
+		constexpr void tryCallTransitionAction(StateBeforeType& stateBefore, const EventTriggerType& event, StateAfterType& stateAfter)
+		{
+			if constexpr (hasAction_v<Transition>)
+			{
+				getAction_t<Transition> {} (stateBefore, event, stateAfter);
 			}
 		}
 	};
