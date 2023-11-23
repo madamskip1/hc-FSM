@@ -78,6 +78,37 @@ namespace FSM
 		EXPECT_EQ(is_same_statesFromTransition_t_Wrong, false);
 	}
 
+	TEST(TransitionTraitsTests, getTransition)
+	{
+		using transition1 = Transition<StateA, EventB, StateB>;
+		using transition2 = Transition<StateB, EventA, StateA>;
+		using transitions_table = TransitionsTable<
+			transition1,
+			transition2
+		>;
+
+		using transitionFromStateAEventB = typename getTransition<transitions_table, StateA, EventB>::type;
+		using transitionFromStateAEventB_t = getTransition_t<transitions_table, StateA, EventB>;
+		constexpr auto is_same_transitionFromStateAEventB = std::is_same_v<transition1, transitionFromStateAEventB>;
+		constexpr auto is_same_transitionFromStateAEventB_t = std::is_same_v<transition1, transitionFromStateAEventB_t>;
+		EXPECT_EQ(is_same_transitionFromStateAEventB, true);
+		EXPECT_EQ(is_same_transitionFromStateAEventB_t, true);
+
+		using transitionFromStateBEventA = typename getTransition<transitions_table, StateB, EventA>::type;
+		using transitionFromStateBEventA_t = getTransition_t<transitions_table, StateB, EventA>;
+		constexpr auto is_same_transitionFromStateBEventA = std::is_same_v<transition2, transitionFromStateBEventA>;
+		constexpr auto is_same_transitionFromStateBEventA_t = std::is_same_v<transition2, transitionFromStateBEventA_t>;
+		EXPECT_EQ(is_same_transitionFromStateBEventA, true);
+		EXPECT_EQ(is_same_transitionFromStateBEventA_t, true);
+
+		using transtionFromStateBEventB = typename getTransition<transitions_table, StateB, EventB>::type;
+		using transtionFromStateBEventB_t = getTransition_t<transitions_table, StateB, EventB>;
+		constexpr auto is_same_transtionFromStateBEventB = std::is_same_v<NO_VALID_TRANSITION, transtionFromStateBEventB>;
+		constexpr auto is_same_transtionFromStateBEventB_t = std::is_same_v<NO_VALID_TRANSITION, transtionFromStateBEventB_t>;
+		EXPECT_EQ(is_same_transtionFromStateBEventB, true);
+		EXPECT_EQ(is_same_transtionFromStateBEventB_t, true);
+	}
+
 	TEST(TransitionTraitsTests, NextState)
 	{
 		using transition1 = Transition<StateA, EventB, StateB>;
