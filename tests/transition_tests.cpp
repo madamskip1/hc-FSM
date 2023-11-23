@@ -32,6 +32,16 @@ namespace FSM
 		EXPECT_EQ(is_same_transition_next_state_type, true);
 	}
 
+	TEST(TransitionTraitsTests, isValidTransition)
+	{
+		using transition = Transition<StateA, EventB, StateB>;
+
+		constexpr auto is_valid_transition = isValidTransition<transition>::value;
+		constexpr auto is_valid_transition_v = isValidTransition_v<transition>;
+		EXPECT_EQ(is_valid_transition, true);
+		EXPECT_EQ(is_valid_transition_v, true);
+	}
+
 	TEST(TransitionTraitsTests, getBeforeState)
 	{
 		using transition = Transition<StateA, EventB, StateB>;
