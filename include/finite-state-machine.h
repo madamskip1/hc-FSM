@@ -63,31 +63,31 @@ namespace FSM
 			InitialState
 		>;
 
-		StateMachine() 
+		constexpr StateMachine() 
 		{
 			statesVariant.template emplace<initial_state_type>();
 		};
 
 		template <typename NewState>
-		void forceTransition()
+		constexpr void forceTransition()
 		{
 			statesVariant.template emplace<NewState>();
 		};
 
 		template <typename State, typename InnerState, typename ...InnerStates>
-		void forceTransition()
+		constexpr void forceTransition()
 		{
 			std::get<State>(statesVariant).template forceTransition<InnerState, InnerStates...>();
 		}
 
 		template <typename State>
-		constexpr bool isInState()
+		constexpr bool isInState() const
 		{
 			return std::holds_alternative<State>(statesVariant);
 		}
 
 		template <typename State, typename InnerState, typename ...InnerStates>
-		constexpr bool isInState()
+		constexpr bool isInState() const
 		{
 			if constexpr (isStateMachine_v<State>)
 			{
@@ -112,13 +112,13 @@ namespace FSM
 		}
 
 		template <typename EventTriggerType>
-		HandleEventResult handleEvent()
+		constexpr HandleEventResult handleEvent()
 		{
 			return handleEvent_impl(EventTriggerType{});
 		}
 
 		template <typename EventTriggerType>
-		HandleEventResult handleEvent(const EventTriggerType& event)
+		constexpr HandleEventResult handleEvent(const EventTriggerType& event)
 		{
 			return handleEvent_impl(event);
 		}
@@ -129,13 +129,13 @@ namespace FSM
 		template <typename EventTriggerType>
 		constexpr HandleEventResult handleEvent_impl(const EventTriggerType& event)
 		{
-			auto lambda = [this, &event](auto& currentState) -> HandleEventResult
+			const auto lambda = [this, &event](auto& currentState) -> HandleEventResult
 				{
 					using cur_state_type = std::decay_t<decltype(currentState)>;
 
 					if constexpr (isStateMachine_v<cur_state_type>)
 					{
-						auto innerTransitResult = innerStateMachineTransition(currentState, event);
+						const auto innerTransitResult = innerStateMachineTransition(currentState, event);
 
 						if (innerTransitResult == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE)
 						{
@@ -188,9 +188,9 @@ namespace FSM
 		}
 
 		template <typename InnerStateMachineType, typename EventTriggerType>
-		constexpr HandleEventResult innerStateMachineTransition(InnerStateMachineType& innerStateMachine, const EventTriggerType& event)
+		constexpr HandleEventResult innerStateMachineTransition(InnerStateMachineType& innerStateMachine, const EventTriggerType& event) const
 		{
-			auto innerTransitionResult = innerStateMachine.handleEvent(event);
+			const auto innerTransitionResult = innerStateMachine.handleEvent(event);
 			if (innerTransitionResult == HandleEventResult::PROCESSED ||
 				innerTransitionResult == HandleEventResult::PROCESSED_SAME_STATE ||
 				innerTransitionResult == HandleEventResult::PROCESSED_INNER_STATE_MACHINE)
@@ -202,10 +202,10 @@ namespace FSM
 		}
 
 		template <typename CurrentStateType, typename EventTriggerType>
-		HandleEventResult normalTransition(CurrentStateType& currentState, const EventTriggerType& event)
+		constexpr HandleEventResult normalTransition(CurrentStateType& currentState, const EventTriggerType& event)
 		{
 			using transition = getTransition_t<transitions_table, CurrentStateType, EventTriggerType>;			
-			auto transitResult = transit<transition>(currentState, event);
+			const auto transitResult = transit<transition>(currentState, event);
 
 			if constexpr (isValidTransition_v<transition>)
 			{
@@ -233,7 +233,7 @@ namespace FSM
 					return HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE;
 				}
 				
-				auto transitResult = transit<transition>(currentState, AUTOMATIC_TRANSITION{});
+				const auto transitResult = transit<transition>(currentState, AUTOMATIC_TRANSITION{});
 				
 				if (auto nextAutomaticTransitionsResult = tryAutomaticTransition(std::get<next_state_type>(statesVariant));
 					nextAutomaticTransitionsResult != HandleEventResult::NO_VALID_TRANSITION)
@@ -249,7 +249,7 @@ namespace FSM
 		}
 
 		template <typename StateType, typename EventTriggerType>
-		constexpr void tryCallOnExit(StateType& state, const EventTriggerType& event)
+		constexpr void tryCallOnExit(StateType& state, const EventTriggerType& event) const
 		{
 			if constexpr (has_onExit_v<StateType, EventTriggerType>)
 			{
@@ -262,7 +262,7 @@ namespace FSM
 		}
 
 		template <typename StateType, typename EventTriggerType>
-		constexpr void tryCallOnEntry(StateType& state, const EventTriggerType& event)
+		constexpr void tryCallOnEntry(StateType& state, const EventTriggerType& event) const
 		{
 			if constexpr (has_onEntry_v<StateType, EventTriggerType>)
 			{
@@ -275,7 +275,7 @@ namespace FSM
 		}
 
 		template <typename Transition, typename StateBeforeType, typename EventTriggerType, typename StateAfterType>
-		constexpr void tryCallTransitionAction(StateBeforeType& stateBefore, const EventTriggerType& event, StateAfterType& stateAfter)
+		constexpr void tryCallTransitionAction(StateBeforeType& stateBefore, const EventTriggerType& event, StateAfterType& stateAfter) const
 		{
 			if constexpr (hasAction_v<Transition>)
 			{
