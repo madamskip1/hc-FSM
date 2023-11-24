@@ -92,7 +92,7 @@ namespace FSM
 			if constexpr (isStateMachine_v<State>)
 			{
 				if  (std::holds_alternative<State>(statesVariant))
-				{
+				{	
 					return std::get<State>(statesVariant).template isInState<InnerState, InnerStates...>();
 				}
 			}

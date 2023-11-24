@@ -15,7 +15,7 @@ namespace FSM
 {
 	struct dummyCallableStruct
 	{
-		void operator() () {};
+		void operator() (StateA&, EventA&, StateB&) {};
 	};
 
 	TEST(TransitionTraitsTests, Transition)
@@ -80,7 +80,7 @@ namespace FSM
 	
 	TEST(TransitionTraitsTests, hasAction)
 	{
-		using transition = Transition<StateA, EventB, StateB, dummyCallableStruct>;
+		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct>;
 		using transitionNoAction = Transition<StateA, EventB, StateB>;
 
 		EXPECT_EQ(hasAction<transition>::value, true);
