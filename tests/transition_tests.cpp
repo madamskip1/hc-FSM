@@ -18,6 +18,11 @@ namespace FSM
 		void operator() (StateA&, EventA&, StateB&) {};
 	};
 
+	struct dummyCallableStruct2
+	{
+		void operator() (StateA&, EventA&) {};
+	};
+
 	TEST(TransitionTraitsTests, Transition)
 	{
 		using transition = Transition<StateA, EventB, StateB>;
@@ -87,6 +92,50 @@ namespace FSM
 		EXPECT_EQ(hasAction_v<transition>, true);	
 		EXPECT_EQ(hasAction<transitionNoAction>::value, false);
 		EXPECT_EQ(hasAction_v<transitionNoAction>, false);
+	}
+
+	TEST(TransitionTraitsTests, hasGuard)
+	{
+		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct, dummyCallableStruct2>;
+		using transitionNoGuard = Transition<StateA, EventB, StateB>;
+
+		EXPECT_EQ(hasGuard<transition>::value, true);
+		EXPECT_EQ(hasGuard_v<transition>, true);
+		EXPECT_EQ(hasGuard<transitionNoGuard>::value, false);
+		EXPECT_EQ(hasGuard_v<transitionNoGuard>, false);
+	}
+
+	TEST(TransitionTraitsTests, getGuard)
+	{
+		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct, dummyCallableStruct2>;
+		using transitionNoGuard = Transition<StateA, EventB, StateB>;
+
+		constexpr auto is_same_guard_type = std::is_same_v<dummyCallableStruct2, getGuard_t<transition>>;
+		EXPECT_EQ(is_same_guard_type, true);
+
+		constexpr auto noGuardVoid = std::is_same_v<void, getGuard_t<transitionNoGuard>>;
+		EXPECT_EQ(noGuardVoid, true);
+	}
+
+	TEST(TransitionTraitsTest, TransitionWithoutActionWithGuard)
+	{
+		using transition = TransitionWithGuard<StateA, EventA, StateB, dummyCallableStruct2>;
+
+		constexpr auto is_same_transition_before_state_type = std::is_same_v<StateA, typename transition::before_state_type>;
+		EXPECT_EQ(is_same_transition_before_state_type, true);
+
+		constexpr auto is_same_transition_event_type = std::is_same_v<EventA, typename transition::event_type>;
+		EXPECT_EQ(is_same_transition_event_type, true);
+
+		constexpr auto is_same_transition_next_state_type = std::is_same_v<StateB, typename transition::next_state_type>;
+		EXPECT_EQ(is_same_transition_next_state_type, true);
+
+		constexpr auto noActionVoid = std::is_same_v<void, typename transition::action_type>;
+		EXPECT_EQ(noActionVoid, true);
+
+		constexpr auto is_same_guard_type = std::is_same_v<dummyCallableStruct2, typename transition::guard_type>;
+		EXPECT_EQ(is_same_guard_type, true);
+
 	}
 
 	TEST(TransitionTraitsTests, DoTransitionMatch)

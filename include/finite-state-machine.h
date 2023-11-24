@@ -9,6 +9,24 @@
 
 namespace FSM
 {
+	enum class HandleEventResult
+	{
+		PROCESSED,
+		PROCESSED_SAME_STATE, // Event processed, but there is no need to change state, for e.g. StateA (EventA) -> StateA
+		PROCESSED_INNER_STATE_MACHINE,
+		NO_VALID_TRANSITION,
+		EXIT_INNER_STATE_MACHINE,
+		EXIT_AUTOMATIC_INNER_STATE_MACHINE,
+		GUARD_FAILED
+	};
+
+	constexpr bool isEventResultOk(HandleEventResult result)
+	{
+		return result == HandleEventResult::PROCESSED ||
+			result == HandleEventResult::PROCESSED_SAME_STATE ||
+			result == HandleEventResult::PROCESSED_INNER_STATE_MACHINE;
+	}
+
 	template <typename Transitions_Table, typename InitialState = void>
 	class StateMachine;
 
@@ -38,17 +56,6 @@ namespace FSM
 
 	template <typename T>
 	inline constexpr bool isStateMachine_v = isStateMachine<T>::value;
-
-
-	enum class HandleEventResult
-	{
-		PROCESSED,
-		PROCESSED_SAME_STATE, // Event processed, but there is no need to change state, for e.g. StateA (EventA) -> StateA
-		PROCESSED_INNER_STATE_MACHINE,
-		NO_VALID_TRANSITION,
-		EXIT_INNER_STATE_MACHINE,
-		EXIT_AUTOMATIC_INNER_STATE_MACHINE
-	};
 
 	template <typename Transitions_Table, typename InitialState>
 	class StateMachine
@@ -162,6 +169,12 @@ namespace FSM
 			}
 			else
 			{
+				if constexpr (hasGuard_v<Transition>)
+				{
+					if (!getGuard_t<Transition>{}(currentState, event))
+						return HandleEventResult::GUARD_FAILED;
+				}
+				
 				using next_state_type = getNextState_t<Transition>;
 
 				if constexpr (std::is_same_v<std::decay_t<CurrentStateType>, next_state_type>)
