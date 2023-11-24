@@ -12,12 +12,12 @@ namespace FSM
 	};
 
 
-	template <typename TransitionTuple, typename BeforeStateType, typename EventTriggerType>
+	template <typename Transition, typename BeforeStateType, typename EventTriggerType>
 	static constexpr bool doTransitionMatch()
 	{
 		return std::conjunction_v<
-			std::is_same<typename TransitionTuple::before_state_type, BeforeStateType>,
-			std::is_same<typename TransitionTuple::event_type, EventTriggerType>
+			std::is_same<getBeforeState_t<Transition>, BeforeStateType>,
+			std::is_same<getEvent_t<Transition>, EventTriggerType>
 		>;
 	}
 
@@ -56,42 +56,41 @@ namespace FSM
 
 	// ~hasAutomaticTransition
 
-	// getNextStateFromTransitionsTable
+	// getTransition
 
 	template <typename Transitions_Table, typename BeforeStateType, typename EventTriggerType>
-	struct getNextStateFromTransitionsTable
+	struct getTransition
 	{
-
 		template <typename ...Transitions>
-		struct getNextStateFromTransitionsTable_impl;
+		struct getTransition_impl;
 
-		template <typename LastTransition>
-		struct getNextStateFromTransitionsTable_impl<std::tuple<LastTransition>>
+		template <typename Transition>
+		struct getTransition_impl<std::tuple<Transition>>
 		{
 			using type = std::conditional_t<
-				doTransitionMatch<LastTransition, BeforeStateType, EventTriggerType>(),
-				typename LastTransition::next_state_type,
+				doTransitionMatch<Transition, BeforeStateType, EventTriggerType>(),
+				Transition,
 				NO_VALID_TRANSITION
 			>;
 		};
 
 		template <typename Transition, typename ...RestTransitions>
-		struct getNextStateFromTransitionsTable_impl<std::tuple<Transition, RestTransitions...>>
+		struct getTransition_impl<std::tuple<Transition, RestTransitions...>>
 		{
 			using type = std::conditional_t<
 				doTransitionMatch<Transition, BeforeStateType, EventTriggerType>(),
-				typename Transition::next_state_type,
-				typename getNextStateFromTransitionsTable_impl<std::tuple<RestTransitions...>>::type
+				Transition,
+				typename getTransition_impl<std::tuple<RestTransitions...>>::type
 			>;
 		};
 
-		using type = typename getNextStateFromTransitionsTable_impl<typename Transitions_Table::transitions>::type;
+		using type = typename getTransition_impl<typename Transitions_Table::transitions>::type;
 	};
 
 	template <typename Transitions_Table, typename BeforeStateType, typename EventTriggerType>
-	using getNextStateFromTransitionsTable_t = typename getNextStateFromTransitionsTable<Transitions_Table, BeforeStateType, EventTriggerType>::type;
+	using getTransition_t = typename getTransition<Transitions_Table, BeforeStateType, EventTriggerType>::type;
 
-	// ~getNextStateFromTransitionsTable
+	// ~getTransition
 
 	// getStatesFromTransitionsTable
 
@@ -125,8 +124,8 @@ namespace FSM
 		template <typename StatesTuple, typename Transition>
 		struct getStatesFromTransitionsTable_impl<StatesTuple, std::tuple<Transition>>
 		{
-			using before_state = typename Transition::before_state_type;
-			using next_state = typename Transition::next_state_type;
+			using before_state = getBeforeState_t<Transition>;
+			using next_state = getNextState_t<Transition>;
 
 			using type = typename addTypeToTupleIfNotOccured<next_state, typename addTypeToTupleIfNotOccured<before_state, StatesTuple>::type>::type;
 		};
@@ -134,8 +133,8 @@ namespace FSM
 		template <typename StatesTuple, typename Transition, typename ...RestTransitions>
 		struct getStatesFromTransitionsTable_impl<StatesTuple, std::tuple<Transition, RestTransitions...>>
 		{
-			using before_state = typename Transition::before_state_type;
-			using next_state = typename Transition::next_state_type;
+			using before_state = getBeforeState_t<Transition>;
+			using next_state = getNextState_t<Transition>;
 
 			using with_before_state = typename addTypeToTupleIfNotOccured<before_state, StatesTuple>::type;
 			using with_before_after_state = typename addTypeToTupleIfNotOccured<next_state, with_before_state>::type;
