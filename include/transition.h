@@ -61,7 +61,7 @@ namespace FSM
 	using getAction_t = typename getAction<TransitionType>::type;
 
 	template <typename TransitionType>
-	struct hasAction : std::is_invocable<getAction_t<TransitionType>> {};
+	struct hasAction : std::is_invocable<getAction_t<TransitionType>, getBeforeState_t<TransitionType>&, getEvent_t<TransitionType>&, getNextState_t<TransitionType>&> {};
 
 	template <typename TransitionType>
 	static constexpr bool hasAction_v = hasAction<TransitionType>::value;

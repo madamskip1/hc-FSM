@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 #include "transition_action.h"
+#include "transition.h"
+#include "transitions-table.h"
+#include "finite-state-machine.h"
 
 namespace FSM
 {
@@ -56,5 +59,24 @@ namespace FSM
         ActionWithStates_test_action {} (stateA, eventA, stateB);
         EXPECT_EQ(stateA.value, 1);
         EXPECT_EQ(stateB.value, 10);
+    }
+
+    TEST(TransitionActionTest, hasAction_withGeneratedAction)
+    {
+        using transition = Transition<StateA, EventA, StateB, CreateAction_test_action>;
+        ASSERT_EQ(isValidTransition_v<transition>, true);
+        ASSERT_EQ(hasAction_v<transition>, true);
+    }
+
+    TEST(TransitionActionTest, TransitionWithAction)
+    {
+        using transition = Transition<StateA, EventA, StateB, ActionWithStates_test_action>;
+        ASSERT_EQ(isValidTransition_v<transition>, true);
+        ASSERT_EQ(hasAction_v<transition>, true);
+
+        auto stateMachine = StateMachine<TransitionsTable<transition>>{};
+        stateMachine.handleEvent(EventA{});
+        ASSERT_EQ(stateMachine.isInState<StateB>(), true);
+        EXPECT_EQ(stateMachine.getState<StateB>().value, 3);
     }
 }

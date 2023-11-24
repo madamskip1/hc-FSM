@@ -99,6 +99,18 @@ namespace FSM
 			return false;
 		}
 
+		template <typename State>
+		constexpr State& getState()
+		{
+			return std::get<State>(statesVariant);
+		}
+
+		template <typename State, typename InnerState, typename ...InnerStates>
+		constexpr auto getState()
+		{
+			return std::get<State>(statesVariant).template getState<InnerState, InnerStates...>();
+		}
+
 		template <typename EventTriggerType>
 		HandleEventResult handleEvent()
 		{
@@ -151,6 +163,7 @@ namespace FSM
 			else
 			{
 				using next_state_type = getNextState_t<Transition>;
+
 				if constexpr (std::is_same_v<std::decay_t<CurrentStateType>, next_state_type>)
 				{
 					tryCallTransitionAction<Transition>(currentState, event, currentState);
@@ -167,7 +180,7 @@ namespace FSM
 					next_state_type nextState;
 					tryCallTransitionAction<Transition>(currentState, event, nextState);
 					tryCallOnEntry(nextState, event);
-
+					
 					statesVariant = std::move(nextState);
 					return HandleEventResult::PROCESSED;
 				}

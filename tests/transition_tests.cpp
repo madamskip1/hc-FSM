@@ -77,7 +77,7 @@ namespace FSM
 		constexpr auto noActionVoid = std::is_same_v<void, getAction_t<transitionNoAction>>;
 		EXPECT_EQ(noActionVoid, true);
 	}
-
+	
 	TEST(TransitionTraitsTests, hasAction)
 	{
 		using transition = Transition<StateA, EventB, StateB, dummyCallableStruct>;
