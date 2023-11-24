@@ -6,14 +6,18 @@ namespace FSM
 	struct NO_VALID_TRANSITION {};
 	struct AUTOMATIC_TRANSITION {};
 
-	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Action = void>
+	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Action = void, typename Guard = void>
 	struct Transition
 	{		
 		using before_state_type = BeforeStateType;
 		using event_type = EventTriggerType;
 		using next_state_type = NextStateType;
 		using action_type = Action;
+		using guard_type = Guard;
 	};
+
+	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Guard = void>
+	using TransitionWithGuard = Transition<BeforeStateType, EventTriggerType, NextStateType, void, Guard>;
 	
 	template <typename Transition>
 	struct isValidTransition : std::false_type {};
@@ -65,4 +69,19 @@ namespace FSM
 
 	template <typename TransitionType>
 	static constexpr bool hasAction_v = hasAction<TransitionType>::value;
+
+	template <typename TransitionType>
+	struct getGuard
+	{
+		using type = typename TransitionType::guard_type;
+	};
+
+	template <typename TransitionType>
+	using getGuard_t = typename getGuard<TransitionType>::type;
+
+	template <typename TransitionType>
+	struct hasGuard : std::is_invocable<getGuard_t<TransitionType>, getBeforeState_t<TransitionType>&, getEvent_t<TransitionType>&> {};
+
+	template <typename TransitionType>
+	static constexpr bool hasGuard_v = hasGuard<TransitionType>::value;
 }
