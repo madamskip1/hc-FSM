@@ -22,8 +22,8 @@ namespace FSM
 	template <typename Transition>
 	struct isValidTransition : std::false_type {};
 
-	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Action>
-	struct isValidTransition<Transition<BeforeStateType, EventTriggerType, NextStateType, Action>> : std::true_type {};
+	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Action, typename Guard>
+	struct isValidTransition<Transition<BeforeStateType, EventTriggerType, NextStateType, Action, Guard>> : std::true_type {};
 
 	template <typename Transition>
 	static constexpr bool isValidTransition_v = isValidTransition<Transition>::value;
