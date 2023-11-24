@@ -47,7 +47,8 @@ namespace FSM
 		PROCESSED_INNER_STATE_MACHINE,
 		NO_VALID_TRANSITION,
 		EXIT_INNER_STATE_MACHINE,
-		EXIT_AUTOMATIC_INNER_STATE_MACHINE
+		EXIT_AUTOMATIC_INNER_STATE_MACHINE,
+		GUARD_FAILED
 	};
 
 	template <typename Transitions_Table, typename InitialState>
@@ -162,6 +163,12 @@ namespace FSM
 			}
 			else
 			{
+				if constexpr (hasGuard_v<Transition>)
+				{
+					if (!getGuard_t<Transition>{}(currentState, event))
+						return HandleEventResult::GUARD_FAILED;
+				}
+				
 				using next_state_type = getNextState_t<Transition>;
 
 				if constexpr (std::is_same_v<std::decay_t<CurrentStateType>, next_state_type>)
