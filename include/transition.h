@@ -8,7 +8,15 @@ namespace FSM
 
 	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Action = void, typename Guard = void>
 	struct Transition
-	{		
+	{
+		static_assert(!std::is_same_v<BeforeStateType, void>, "BeforeStateType cannot be void");
+		static_assert(!std::is_same_v<EventTriggerType, void>, "EventTriggerType cannot be void");
+		static_assert(!std::is_same_v<NextStateType, void>, "NextStateType cannot be void");
+		static_assert(std::is_same_v<Action, void> || std::is_invocable_v<Action, BeforeStateType&, EventTriggerType&, NextStateType&>,
+			"Action must be void or callable struct with BeforeStateType&, EventTriggerType&, NextStateType&");
+		static_assert(std::is_same_v<Guard, void> || std::is_invocable_v<Guard, BeforeStateType&, EventTriggerType&>,
+			"Guard must be void or callable struct with BeforeStateType&, EventTriggerType&");
+		
 		using before_state_type = BeforeStateType;
 		using event_type = EventTriggerType;
 		using next_state_type = NextStateType;
@@ -16,8 +24,19 @@ namespace FSM
 		using guard_type = Guard;
 	};
 
+	// Specialized Transition types
+
 	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Guard = void>
 	using TransitionWithGuard = Transition<BeforeStateType, EventTriggerType, NextStateType, void, Guard>;
+
+	template <typename BeforeStateType,typename NextStatetype, typename Action = void, typename Guard = void>
+	using TransitionAutomatic = Transition<BeforeStateType, AUTOMATIC_TRANSITION, NextStatetype, Action, Guard>;
+
+	template <typename BeforeStateType, typename NextStatetype, typename Guard = void>
+	using TransitionAutomaticWithGuard = Transition<BeforeStateType, AUTOMATIC_TRANSITION, NextStatetype, void, Guard>;
+
+	// ~Specialized Transition types
+
 	
 	template <typename Transition>
 	struct isValidTransition : std::false_type {};
