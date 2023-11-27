@@ -5,14 +5,24 @@
 
 namespace FSM
 {
-		template <typename... Transitions>
-		struct TransitionsTable
-		{
-			static_assert(sizeof...(Transitions) >= 1, "TransitionsTable must have at least one transition");
-			static_assert((isValidTransition_v<Transitions> && ...), "TransitionsTable must have only valid transitions. All must be Transition<...> types");
-			
-			using transitions = std::tuple<Transitions...>;
-		};
+	template <typename... Transitions>
+	struct TransitionsTable
+	{
+		static_assert(sizeof...(Transitions) >= 1, "TransitionsTable must have at least one transition");
+		static_assert((isValidTransition_v<Transitions> && ...), "TransitionsTable must have only valid transitions. All must be Transition<...> types");
+		
+		using transitions = std::tuple<Transitions...>;
+	};
+
+	template <typename T>
+	struct isValidTransitionsTable : std::false_type {};
+
+	template <typename... Transitions>
+	struct isValidTransitionsTable<TransitionsTable<Transitions...>> : std::conjunction<std::bool_constant<sizeof...(Transitions) >= 1>, isValidTransition<Transitions>...> {};
+
+	template <typename T>
+	static constexpr bool isValidTransitionsTable_v = isValidTransitionsTable<T>::value;
+
 
 	template <typename Transitions_Table>
 	struct getTransitions
