@@ -30,6 +30,8 @@ namespace FSM
 	template <typename Transitions_Table, typename InitialState>
 	class StateMachine
 	{
+		static_assert(isValidTransitionsTable_v<Transitions_Table>, "Transitions_Table must be a type of TransitionsTable, be valid and has at least one transition");
+
 	public:
 		using transitions_table = Transitions_Table;
 		using states_tuple_type = getStatesFromTransitionsTable_t<Transitions_Table>;
@@ -39,6 +41,7 @@ namespace FSM
 			std::tuple_element_t<0, states_tuple_type>,
 			InitialState
 		>;
+		static_assert(isTypeInTuple_v<initial_state_type, states_tuple_type>, "InitialState must be a one of valid states");
 
 		constexpr StateMachine() 
 		{
@@ -48,24 +51,28 @@ namespace FSM
 		template <typename NewState>
 		constexpr void forceTransition()
 		{
+			static_assert(isTypeInTuple_v<NewState, states_tuple_type>, "NewState must be a one of valid states");
 			statesVariant.template emplace<NewState>();
 		};
 
 		template <typename State, typename InnerState, typename ...InnerStates>
 		constexpr void forceTransition()
 		{
+			static_assert(isTypeInTuple_v<State, states_tuple_type>, "State must be a one of valid states");
 			std::get<State>(statesVariant).template forceTransition<InnerState, InnerStates...>();
 		}
 
 		template <typename State>
 		constexpr bool isInState() const
 		{
+			static_assert(isTypeInTuple_v<State, states_tuple_type>, "State must be a one of valid states");
 			return std::holds_alternative<State>(statesVariant);
 		}
 
 		template <typename State, typename InnerState, typename ...InnerStates>
 		constexpr bool isInState() const
 		{
+			static_assert(isTypeInTuple_v<State, states_tuple_type>, "State must be a one of valid states");
 			if constexpr (isStateMachine_v<State>)
 			{
 				if  (std::holds_alternative<State>(statesVariant))
@@ -79,12 +86,14 @@ namespace FSM
 		template <typename State>
 		constexpr State& getState()
 		{
+			static_assert(isTypeInTuple_v<State, states_tuple_type>, "State must be a one of valid states");
 			return std::get<State>(statesVariant);
 		}
 
 		template <typename State, typename InnerState, typename ...InnerStates>
 		constexpr auto getState()
 		{
+			static_assert(isTypeInTuple_v<State, states_tuple_type>, "State must be a one of valid states");
 			return std::get<State>(statesVariant).template getState<InnerState, InnerStates...>();
 		}
 
