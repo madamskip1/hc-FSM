@@ -32,4 +32,21 @@ namespace FSM
 
     template <typename T>
     inline constexpr bool isStateMachine_v = isStateMachine<T>::value;
+
+
+    template <typename T, typename... Types>
+    struct isTypeInTuple;
+
+    template <typename T>
+    struct isTypeInTuple<T> : std::false_type {};
+
+    template <typename T>
+    struct isTypeInTuple<T, std::tuple<>> : std::false_type {};
+
+    template <typename T, typename First, typename... Rest>
+    struct isTypeInTuple<T, std::tuple<First, Rest...>> : std::conditional_t<std::is_same_v<T, First>, std::true_type, isTypeInTuple<T, std::tuple<Rest...>>> {};
+
+    template <typename T, typename Tuple>
+    inline constexpr bool isTypeInTuple_v = isTypeInTuple<T, Tuple>::value;
 }
+

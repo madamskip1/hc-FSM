@@ -37,6 +37,20 @@ namespace FSM
         EXPECT_EQ(is_same_states_t, true);
     }
 
+    TEST(StateMachineTests, isTypeinTuple)
+    {
+        using SimpleTuple = std::tuple<int, float, double>;
+        auto isInSimple = isTypeInTuple_v<int, SimpleTuple>;
+        EXPECT_EQ(isInSimple, true);
+        
+        auto isNotInSimple = isTypeInTuple_v<char, SimpleTuple>;
+        EXPECT_EQ(isNotInSimple, false);
+
+        using EmptyTuple = std::tuple<>;
+        auto isInEmpty = isTypeInTuple_v<int, EmptyTuple>;
+        EXPECT_EQ(isInEmpty, false);
+    }
+
     TEST(StateMachineTests, InitialState)
     {
         using transition1 = Transition<StateA, EventA, StateB>;
