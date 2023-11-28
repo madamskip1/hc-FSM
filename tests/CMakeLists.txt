@@ -45,3 +45,4 @@ add_unit_test(transition_action_tests)
 add_unit_test(transition_guard_tests)
 
 add_integration_test(onEntry_onExit_actions_tests)
+add_integration_test(guard_action_tests)
