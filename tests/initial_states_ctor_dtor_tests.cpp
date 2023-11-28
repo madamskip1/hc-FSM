@@ -168,7 +168,7 @@ namespace FSM
         EXPECT_EQ(MyClass2::destructorCalls, 0);
     }
 
-        TEST(InitialStatesCtorDtorTests, ExplicitInitialState)
+    TEST(InitialStatesCtorDtorTests, ExplicitInitialState)
     {
         resetCounters<MyClass1>();
         resetCounters<MyClass2>();

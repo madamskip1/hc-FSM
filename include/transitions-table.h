@@ -14,6 +14,8 @@ namespace FSM
 		using transitions = std::tuple<Transitions...>;
 	};
 
+	// isValidTransitionsTable
+
 	template <typename T>
 	struct isValidTransitionsTable : std::false_type {};
 
@@ -23,6 +25,9 @@ namespace FSM
 	template <typename T>
 	static constexpr bool isValidTransitionsTable_v = isValidTransitionsTable<T>::value;
 
+	// ~isValidTransitionsTable
+
+	// getTransitions
 
 	template <typename Transitions_Table>
 	struct getTransitions
@@ -33,6 +38,8 @@ namespace FSM
 	template <typename Transitions_Table>
 	using getTransitions_t = typename getTransitions<Transitions_Table>::type;
 
+	// ~getTransitions
+
 
 	template <typename Transition, typename BeforeStateType, typename EventTriggerType>
 	static constexpr bool doTransitionMatch()
@@ -42,6 +49,7 @@ namespace FSM
 			std::is_same<getEvent_t<Transition>, EventTriggerType>
 		>;
 	}
+
 
 	//  hasTransition
 
@@ -117,10 +125,7 @@ namespace FSM
 	struct getStatesFromTransitionsTable
 	{
 		template <typename Type, typename ...Types>
-		struct isInTypes
-		{
-			static constexpr bool value = std::disjunction_v<std::is_same<Type, Types>...>;
-		};
+		struct isInTypes : std::disjunction<std::is_same<Type, Types>...> {};
 
 		template<typename Type, typename Types>
 		struct addTypeToTupleIfNotOccured;

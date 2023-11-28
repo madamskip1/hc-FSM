@@ -37,6 +37,7 @@ namespace FSM
 
 	// ~Specialized Transition types
 
+	// isValidTransition
 	
 	template <typename Transition>
 	struct isValidTransition : std::false_type {};
@@ -46,6 +47,10 @@ namespace FSM
 
 	template <typename Transition>
 	static constexpr bool isValidTransition_v = isValidTransition<Transition>::value;
+
+	// ~isValidTransition
+
+	// getBeforeState, getNextState, getEvent, getAction, getGuard
 
 	template <typename TransitionType>
 	struct getBeforeState
@@ -84,12 +89,6 @@ namespace FSM
 	using getAction_t = typename getAction<TransitionType>::type;
 
 	template <typename TransitionType>
-	struct hasAction : std::is_invocable<getAction_t<TransitionType>, getBeforeState_t<TransitionType>&, getEvent_t<TransitionType>&, getNextState_t<TransitionType>&> {};
-
-	template <typename TransitionType>
-	static constexpr bool hasAction_v = hasAction<TransitionType>::value;
-
-	template <typename TransitionType>
 	struct getGuard
 	{
 		using type = typename TransitionType::guard_type;
@@ -98,9 +97,21 @@ namespace FSM
 	template <typename TransitionType>
 	using getGuard_t = typename getGuard<TransitionType>::type;
 
+	// ~getBeforeState, getNextState, getEvent, getAction, getGuard
+
+	// hasAction, hasGuard
+
+	template <typename TransitionType>
+	struct hasAction : std::is_invocable<getAction_t<TransitionType>, getBeforeState_t<TransitionType>&, getEvent_t<TransitionType>&, getNextState_t<TransitionType>&> {};
+
+	template <typename TransitionType>
+	static constexpr bool hasAction_v = hasAction<TransitionType>::value;
+
 	template <typename TransitionType>
 	struct hasGuard : std::is_invocable<getGuard_t<TransitionType>, getBeforeState_t<TransitionType>&, getEvent_t<TransitionType>&> {};
 
 	template <typename TransitionType>
 	static constexpr bool hasGuard_v = hasGuard<TransitionType>::value;
+
+	// ~hasAction, hasGuard
 }

@@ -6,6 +6,8 @@
 
 namespace FSM
 {
+    // variantTypeFromStatesTuple
+
     template <typename StatesTuple>
     struct variantTypeFromStatesTuple;
 
@@ -24,6 +26,10 @@ namespace FSM
     template <typename StatesTuple>
     using variantTypeFromStatesTuple_t = typename variantTypeFromStatesTuple<StatesTuple>::type;
 
+    // ~variantTypeFromStatesTuple
+
+    // isStateMachine
+
     template <typename T>
     struct isStateMachine : std::false_type {};
 
@@ -33,20 +39,19 @@ namespace FSM
     template <typename T>
     inline constexpr bool isStateMachine_v = isStateMachine<T>::value;
 
+    // ~isStateMachine
+
+    // isTypeInTuple
 
     template <typename T, typename... Types>
     struct isTypeInTuple;
 
-    template <typename T>
-    struct isTypeInTuple<T> : std::false_type {};
-
-    template <typename T>
-    struct isTypeInTuple<T, std::tuple<>> : std::false_type {};
-
-    template <typename T, typename First, typename... Rest>
-    struct isTypeInTuple<T, std::tuple<First, Rest...>> : std::conditional_t<std::is_same_v<T, First>, std::true_type, isTypeInTuple<T, std::tuple<Rest...>>> {};
+    template <typename Type, typename ...Types>
+    struct isTypeInTuple<Type, std::tuple<Types...>> : std::disjunction<std::is_same<Type, Types>...> {};
 
     template <typename T, typename Tuple>
     inline constexpr bool isTypeInTuple_v = isTypeInTuple<T, Tuple>::value;
+
+    // ~isTypeInTuple
 }
 
