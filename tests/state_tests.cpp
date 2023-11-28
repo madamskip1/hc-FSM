@@ -6,20 +6,21 @@ namespace FSM
     struct Event {};
     struct EventA : Event {};
 
-    struct StateA : State {};
-    struct StateB : State
+    struct StateA {};
+    struct StateB
     {
         void onEntry() {};
 
         void onExit() {};
     };
-    struct StateC : State {
+    struct StateC
+    {
         void onEntry(const Event& event) {};
 
         void onExit(const EventA& event) {};
 
     };
-    struct StateD : State
+    struct StateD
     {
         void onEntry(const EventA& event) {};
         void onEntry(const Event& event) {};
@@ -27,7 +28,7 @@ namespace FSM
         void onExit(const EventA& event) {};
         void onExit(const Event& event) {};
     };
-    struct StateE : State
+    struct StateE
     {
         void onEntry(const EventA& eventA) {};
 

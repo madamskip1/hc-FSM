@@ -3,11 +3,9 @@
 
 namespace FSM
 {
-	struct State {};
+	struct ExitState {};
 
-	struct ExitState : public State {};
-
-	/* has_onEntry trait */
+	/* has_onEntry */
 
 	template <typename StateType, typename EventType, typename = void>
 	struct has_onEntry : std::false_type {};
@@ -27,9 +25,9 @@ namespace FSM
 	template <typename StateType>
 	inline constexpr bool has_onEntryNoEventArg_v = has_onEntryNoEventArg<StateType>::value;
 
-	/* --- has_onEntry trait*/
+	/* ~has_onEntry */
 
-	/* has_onExit trait */
+	/* has_onExit */
 
 	template <typename StateType, typename EventType, typename = void>
 	struct has_onExit : std::false_type {};
@@ -49,6 +47,6 @@ namespace FSM
 	template <typename StateType>
 	inline constexpr bool has_onExitNoEventArg_v = has_onExitNoEventArg<StateType>::value;
 
-	/* --- has_onExit trait */
+	/* ~has_onExit */
 }
 

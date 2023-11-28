@@ -73,7 +73,7 @@ namespace FSM
 
 	TEST(TransitionTraitsTests, getAction)
 	{
-		using transition = Transition<StateA, EventB, StateB, dummyCallableStruct>;
+		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct>;
 		using transitionNoAction = Transition<StateA, EventB, StateB>;
 
 		constexpr bool thereIsAction = std::is_same_v<dummyCallableStruct, getAction_t<transition>>;
@@ -232,5 +232,33 @@ namespace FSM
 		constexpr auto is_same_transtionFromStateBEventB_t = std::is_same_v<NO_VALID_TRANSITION, transtionFromStateBEventB_t>;
 		EXPECT_EQ(is_same_transtionFromStateBEventB, true);
 		EXPECT_EQ(is_same_transtionFromStateBEventB_t, true);
+	}
+
+	TEST(TransitionTraitsTests, isValidTransitionsTable)
+	{
+		using transition1 = Transition<StateA, EventB, StateB>;
+		using transitions_table1 = TransitionsTable<
+			transition1
+		>;
+		EXPECT_EQ(isValidTransitionsTable<transitions_table1>::value, true);
+		EXPECT_EQ(isValidTransitionsTable_v<transitions_table1>, true);
+
+		using transition2 = StateA;
+		using transitions_table2 = TransitionsTable<
+			transition2
+		>;
+		EXPECT_EQ(isValidTransitionsTable<transitions_table2>::value, false);
+		EXPECT_EQ(isValidTransitionsTable_v<transitions_table2>, false);
+
+		using transitions_table3 = TransitionsTable<
+		>;
+
+		EXPECT_EQ(isValidTransitionsTable<transitions_table3>::value, false);
+		EXPECT_EQ(isValidTransitionsTable_v<transitions_table3>, false);
+
+		EXPECT_EQ(isValidTransitionsTable<void>::value, false);
+		EXPECT_EQ(isValidTransitionsTable_v<void>, false);
+		EXPECT_EQ(isValidTransitionsTable<StateA>::value, false);
+		EXPECT_EQ(isValidTransitionsTable_v<StateA>, false);
 	}
 }
