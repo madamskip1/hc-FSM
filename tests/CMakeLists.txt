@@ -11,6 +11,13 @@ macro(add_unit_test testname)
     gtest_discover_tests(${testname})
 endmacro(add_unit_test)
 
+macro(add_integration_test testname)
+    add_executable(${testname} integration_tests/${testname}.cpp)
+    target_link_libraries(${testname} GTest::gtest_main)
+    add_test(NAME ${testname} COMMAND ${testname})
+    gtest_discover_tests(${testname})
+endmacro(add_integration_test)
+
 include(FetchContent)
 include(GoogleTest)
 
@@ -36,3 +43,5 @@ add_unit_test(automatic_transition_tests)
 add_unit_test(initial_states_ctor_dtor_tests)
 add_unit_test(transition_action_tests)
 add_unit_test(transition_guard_tests)
+
+add_integration_test(onEntry_onExit_actions_tests)
