@@ -176,11 +176,14 @@ namespace FSM
 				}
 				
 				const auto transitResult = transit<transition>(currentState, AUTOMATIC_TRANSITION{});
-				
-				if (auto nextAutomaticTransitionsResult = tryAutomaticTransition(std::get<NextStateType>(statesVariant));
-					nextAutomaticTransitionsResult != HandleEventResult::NO_VALID_TRANSITION)
+
+				if (isEventResultOk(transitResult))
 				{
-					return nextAutomaticTransitionsResult;
+					if (auto nextAutomaticTransitionsResult = tryAutomaticTransition(std::get<NextStateType>(statesVariant));
+							nextAutomaticTransitionsResult != HandleEventResult::NO_VALID_TRANSITION)
+					{
+						return nextAutomaticTransitionsResult;
+					}
 				}
 				return transitResult;
 			}
