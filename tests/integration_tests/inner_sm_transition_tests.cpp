@@ -96,4 +96,26 @@ namespace FSM
         EXPECT_EQ(handleResultEvent, HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
     }
+
+    TEST(InnerSMTransitionsTests, shouldAutomaticalyTransitStateInInnerStateMachine)
+    {
+        using innerTransition1 = Transition<StateA, EventA, StateB>;
+        using innerTransition2 = TransitionAutomatic<StateB, StateC>; // or Transition<StateB, AUTOMATIC_TRANSITION, StateC>
+        using innerSM = StateMachine<TransitionsTable<
+            innerTransition1,
+            innerTransition2
+        >>;
+
+        using transition = Transition<innerSM, EventA, StateA>;
+        using transitions_table = TransitionsTable<transition>;
+        
+        auto stateMachine = StateMachine<transitions_table> {};
+        // initial state is innerSM::StateA
+
+        auto handleResultEvent = stateMachine.handleEvent<EventA>();
+        EXPECT_EQ(handleResultEvent, HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+        EXPECT_EQ(stateMachine.isInState<innerSM>(), true);
+        auto isInInnerStateC = stateMachine.isInState<innerSM, StateC>();
+        EXPECT_EQ(isInInnerStateC, true);   
+    }
 }
