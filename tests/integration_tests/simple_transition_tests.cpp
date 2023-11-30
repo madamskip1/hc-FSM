@@ -31,6 +31,7 @@ namespace FSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         auto handleEventResult = stateMachine.handleEvent<EventB>();
+
         EXPECT_EQ(handleEventResult, HandleEventResult::NO_VALID_TRANSITION);
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
     }
@@ -42,6 +43,7 @@ namespace FSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         auto handleEventResult = stateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(handleEventResult, HandleEventResult::PROCESSED_SAME_STATE);
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
     }
@@ -56,7 +58,9 @@ namespace FSM
         >;
 
         auto stateMachine = StateMachine<transitions_table> {};
-        stateMachine.handleEvent<EventA>();
+        auto hadleEventResult = stateMachine.handleEvent<EventA>();
+
+        EXPECT_EQ(hadleEventResult, HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<StateC>(), true);
     }
 }

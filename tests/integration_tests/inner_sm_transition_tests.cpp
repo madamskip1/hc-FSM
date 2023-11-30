@@ -37,7 +37,6 @@ namespace FSM
         using transitions_table = TransitionsTable<transition>;
 
         auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM::StateA
-        
         auto handleEventResult = stateMachine.handleEvent<EventB>();
 
         EXPECT_EQ(handleEventResult, HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
@@ -55,7 +54,6 @@ namespace FSM
         using transitions_table = TransitionsTable<transition>;
 
         auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM::StateA
-        
         auto handleEventResult = stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(handleEventResult, HandleEventResult::NO_VALID_TRANSITION);
@@ -74,6 +72,7 @@ namespace FSM
         
         auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM::StateA
         auto handleResultEvent = stateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(handleResultEvent, HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
     }
@@ -89,10 +88,9 @@ namespace FSM
         using transition = Transition<innerSM1, EventA, StateB>;
         using transitions_table = TransitionsTable<transition>;
         
-        auto stateMachine = StateMachine<transitions_table> {}; 
-        // initial state is innerSM1::innerSM2::StateA
-
+        auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM1::innerSM2::StateA
         auto handleResultEvent = stateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(handleResultEvent, HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
     }
@@ -109,10 +107,9 @@ namespace FSM
         using transition = Transition<innerSM, EventA, StateA>;
         using transitions_table = TransitionsTable<transition>;
         
-        auto stateMachine = StateMachine<transitions_table> {};
-        // initial state is innerSM::StateA
-
+        auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM::StateA
         auto handleResultEvent = stateMachine.handleEvent<EventA>();
+        
         EXPECT_EQ(handleResultEvent, HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
         EXPECT_EQ(stateMachine.isInState<innerSM>(), true);
         auto isInInnerStateC = stateMachine.isInState<innerSM, StateC>();

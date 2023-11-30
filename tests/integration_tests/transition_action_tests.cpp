@@ -37,6 +37,8 @@ namespace FSM
 
     struct EventA {};
 
+
+
     TEST(TransitionActionTests, shouldCallTransitionAction)
     {
         StateA::value = INITIAL_VALUE;
@@ -61,13 +63,14 @@ namespace FSM
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
 
-        // first StateA::value = SOURCE_STATE_VALUE as sourceState, then StateA::value = TARGET_STATE_VALUE as targetState
+        // first set StateA::value = SOURCE_STATE_VALUE as sourceState, then StateA::value = TARGET_STATE_VALUE as targetState
         EXPECT_EQ(stateMachine.getState<StateA>().value, TARGET_STATE_VALUE);
     }
 
     TEST(TransitionActionTess, shouldCallTransitionActionDuringAutomaticTransition)
     {
         StateA::value = INITIAL_VALUE;
+        
         using transition1 = Transition<StateC, EventA, StateA>;
         using transition2 = Transition<StateA, AUTOMATIC_TRANSITION, StateB, transitionFunction>;
         using transitions_table = TransitionsTable<

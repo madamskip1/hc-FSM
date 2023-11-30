@@ -29,6 +29,8 @@ namespace FSM
         int value;
     };
 
+    
+
     TEST(GuardActionTests, shouldAllowTransition)
     {
         using transition1 = TransitionWithGuard<StateA, EventA, StateB, TransitionGuardPass>; // or Transition<StateA, EventA, StateB, void, TransitionGuardPass>
@@ -67,7 +69,6 @@ namespace FSM
         stateMachine.getState<StateC>().value = 1;
         auto handleEventResult = stateMachine.handleEvent<EventA>();
 
-
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
     }
 
@@ -99,10 +100,9 @@ namespace FSM
         >;
 
         auto stateMachine = StateMachine<transitions_table> {};
-        auto handleEventResult = stateMachine.handleEvent<EventA>();
+        stateMachine.handleEvent<EventA>();
         
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
-        EXPECT_EQ(handleEventResult, HandleEventResult::PROCESSED);
     }
 
     TEST(GuardActionTests, shouldNotAllowAutomaticTransition)

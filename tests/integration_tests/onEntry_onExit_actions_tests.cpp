@@ -74,9 +74,8 @@ namespace FSM
 
         onEntryAutomaticTransitionEventMethod();
 
-        static ACTIONS_VALUE value;
+        ACTIONS_VALUE value = ACTIONS_VALUE::NoValue;
     };
-    ACTIONS_VALUE StateD::value = ACTIONS_VALUE::NoValue;
     
     struct StateNoActions {};
 
@@ -96,6 +95,7 @@ namespace FSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnExitNoEventParameter);
     }
 
@@ -109,6 +109,7 @@ namespace FSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventB>();
+
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnExitEventParameter);
     }
 
@@ -121,6 +122,7 @@ namespace FSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
+        
         ASSERT_EQ(stateMachine.isInState<StateB>(), true);
         EXPECT_EQ(stateMachine.getState<StateB>().value, ACTIONS_VALUE::OnEntryNoEventParameter);
     }
@@ -134,6 +136,7 @@ namespace FSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventB>();
+
         ASSERT_EQ(stateMachine.isInState<StateB>(), true);
         EXPECT_EQ(stateMachine.getState<StateB>().value, ACTIONS_VALUE::OnEntryEventParameter);
     }
@@ -148,6 +151,7 @@ namespace FSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnExitNoEventParameter);
         ASSERT_EQ(stateMachine.isInState<StateB>(), true);
         EXPECT_EQ(stateMachine.getState<StateB>().value, ACTIONS_VALUE::OnEntryNoEventParameter);
@@ -163,6 +167,7 @@ namespace FSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventB>();
+
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnExitEventParameter);
         ASSERT_EQ(stateMachine.isInState<StateB>(), true);
         EXPECT_EQ(stateMachine.getState<StateB>().value, ACTIONS_VALUE::OnEntryEventParameter);
@@ -178,6 +183,7 @@ namespace FSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::NoValue);
     }
 
@@ -193,6 +199,7 @@ namespace FSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
+
         ASSERT_EQ(stateMachine.isInState<StateB>(), true);
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnExitNoEventParameter);
         EXPECT_EQ(stateMachine.getState<StateB>().value, ACTIONS_VALUE::OnEntryNoEventParameter);
@@ -207,10 +214,10 @@ namespace FSM
             transition2
         >;
         StateC::value = ACTIONS_VALUE::NoValue;
-        StateD::value = ACTIONS_VALUE::NoValue;
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
+
         ASSERT_EQ(stateMachine.isInState<StateD>(), true);
         EXPECT_EQ(StateC::value, ACTIONS_VALUE::OnExitAutomaticTransitionEventParameter);
         EXPECT_EQ(stateMachine.getState<StateD>().value, ACTIONS_VALUE::OnEntryAutomaticTransitionEventParameter);
@@ -226,15 +233,13 @@ namespace FSM
         using transitions_table = TransitionsTable<transition>;
         StateA::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table> {};
-        // is in innerStateMachine right now
+        auto stateMachine = StateMachine<transitions_table> {}; // is in innerStateMachine right now
         stateMachine.handleEvent<EventA>();
+
         const auto isInInnerStateB = stateMachine.isInState<innerStateMachine, StateB>();
         ASSERT_EQ(isInInnerStateB, true);
-
         const auto innerStateBValue = stateMachine.getState<innerStateMachine, StateB>().value;
         EXPECT_EQ(innerStateBValue, ACTIONS_VALUE::OnEntryNoEventParameter);
-
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnExitNoEventParameter);
     }
 }
