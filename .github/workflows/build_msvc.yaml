@@ -1,12 +1,12 @@
-name: Build clang++
+name: Build MSVC
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build_gplusplus:
-    runs-on: ubuntu-latest
+  build_msvc:
+    runs-on: windows-latest
 
     strategy:
       fail-fast: false
@@ -23,7 +23,7 @@ jobs:
     - name: Configure CMake
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_CXX_COMPILER=clang++
+        -DCMAKE_CXX_COMPILER=cl
         -DCMAKE_BUILD_TYPE=Release
         -S ${{ github.workspace }}
 
