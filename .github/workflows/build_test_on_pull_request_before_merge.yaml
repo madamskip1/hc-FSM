@@ -1,8 +1,6 @@
-name: Build tests and run them on multiple platforms, On merge/pull request to Main
+name: Build tests and run them on multiple platforms. On pull request to Main, before merge
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
