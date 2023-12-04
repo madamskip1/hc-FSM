@@ -40,14 +40,14 @@ struct On {};
 struct Off {};
 struct ButtonClicked {};
 
-using transitions_table = TransitionsTable<
-	Transition<Off, ButtonClicked, On>,
-	Transition<On, ButtonClicked, Off>
+using transitions_table = hcFSM::TransitionsTable<
+	hcFSM::Transition<Off, ButtonClicked, On>,
+	hcFSM::Transition<On, ButtonClicked, Off>
 >;
 
 int main()
 {
-	auto light = StateMachine<transitions_table> {};
+	auto light = hcFSM::StateMachine<transitions_table> {};
 	// initial state is Off
 
 	light.handleEvent<ButtonClicked>(); // transit to On
