@@ -2,7 +2,7 @@
 #include <type_traits>
 #include <tuple>
 #include <variant>
-#include "finite-state-machine-fwd.h"
+#include "state-machine-fwd.h"
 
 namespace hcFSM
 {

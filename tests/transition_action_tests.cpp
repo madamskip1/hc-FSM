@@ -2,7 +2,7 @@
 #include "hcFSM/detail/transition_action.h"
 #include "hcFSM/detail/transition.h"
 #include "hcFSM/detail/transitions-table.h"
-#include "hcFSM/detail/finite-state-machine.h"
+#include "hcFSM/detail/state-machine.h"
 
 namespace hcFSM
 {
