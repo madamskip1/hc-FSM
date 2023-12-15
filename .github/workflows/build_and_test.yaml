@@ -25,6 +25,7 @@ jobs:
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=g++
         -DCMAKE_BUILD_TYPE=Release
+        -DHCFSM_ENABLE_TESTS=ON
         -S ${{ github.workspace }}
 
     - name: Build

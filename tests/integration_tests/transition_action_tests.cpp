@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include "transition_action.h"
-#include "transition-guard.h"
-#include "transition.h"
-#include "transitions-table.h"
-#include "finite-state-machine.h"
+#include "hcFSM/transition_action.h"
+#include "hcFSM/transition-guard.h"
+#include "hcFSM/transition.h"
+#include "hcFSM/transitions-table.h"
+#include "hcFSM/finite-state-machine.h"
 
 namespace FSM
 {
