@@ -1,6 +1,6 @@
 #pragma once
 
-namespace FSM
+namespace hcFSM
 {
     #define CREATE_TRANSITION_ACTION(Name, SourceStateParam, EventParam, TargetStateParam, MethodBody) \
         struct Name { \

@@ -1,5 +1,5 @@
 #pragma once
-namespace FSM
+namespace hcFSM
 {
     enum class HandleEventResult
     {

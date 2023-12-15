@@ -2,13 +2,13 @@
 #include <type_traits>
 #include <tuple>
 #include <variant>
-#include "finite-state-machine-fwd.h"
+#include "state-machine-fwd.h"
 #include "transitions-table.h"
 #include "state.h"
 #include "fsm-traits.h"
 #include "handle-event-result.h"
 
-namespace FSM
+namespace hcFSM
 {
 	template <typename Transitions_Table, typename InitialState>
 	class StateMachine

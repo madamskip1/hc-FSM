@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "hcFSM/finite-state-machine.h"
+#include "hcFSM/detail/state-machine.h"
 
-namespace FSM
+namespace hcFSM
 {
     struct EventA {};
 

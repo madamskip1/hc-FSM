@@ -3,7 +3,7 @@
 #include <tuple>
 #include "transition.h"
 
-namespace FSM
+namespace hcFSM
 {
 	template <typename... Transitions>
 	struct TransitionsTable
