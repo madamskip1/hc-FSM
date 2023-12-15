@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
-#include "finite-state-machine.h"
-#include "state.h"
-#include <iostream>
+#include "hcFSM/finite-state-machine.h"
+#include "hcFSM/state.h"
 
 struct StateA {};
 struct StateB {};

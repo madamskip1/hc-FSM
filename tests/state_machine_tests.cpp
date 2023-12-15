@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "finite-state-machine.h"
-#include "transition.h"
-#include "transitions-table.h"
+#include "hcFSM/finite-state-machine.h"
+#include "hcFSM/transition.h"
+#include "hcFSM/transitions-table.h"
 
 struct StateA {};
 struct StateB {};

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "state.h"
+#include "hcFSM/state.h"
 
 namespace FSM
 {

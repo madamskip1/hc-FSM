@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "transition.h"
-#include "transitions-table.h"
+#include "hcFSM/transition.h"
+#include "hcFSM/transitions-table.h"
 
 struct State {};
 struct StateA : State {};
