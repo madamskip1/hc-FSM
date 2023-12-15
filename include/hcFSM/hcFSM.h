@@ -1,11 +1,11 @@
 #pragma once
 
-#include "hcFSM/handle-event-result.h"
-#include "hcFSM/state.h"
-#include "hcFSM/transition.h"
-#include "hcFSM/transition_action.h"
-#include "hcFSM/transition-guard.h"
-#include "hcFSM/transitions-table.h"
-#include "hcFSM/fsm-traits.h"
-#include "hcFSM/finite-state-machine.h"
+#include "hcFSM/detail/handle-event-result.h"
+#include "hcFSM/detail/state.h"
+#include "hcFSM/detail/transition.h"
+#include "hcFSM/detail/transition_action.h"
+#include "hcFSM/detail/transition-guard.h"
+#include "hcFSM/detail/transitions-table.h"
+#include "hcFSM/detail/fsm-traits.h"
+#include "hcFSM/detail/finite-state-machine.h"
 

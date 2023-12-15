@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "hcFSM/finite-state-machine.h"
+#include "hcFSM/detail/finite-state-machine.h"
 
 namespace FSM
 {
