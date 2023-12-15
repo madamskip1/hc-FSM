@@ -4,7 +4,7 @@
 #include <variant>
 #include "finite-state-machine-fwd.h"
 
-namespace FSM
+namespace hcFSM
 {
     // variantTypeFromStatesTuple
 

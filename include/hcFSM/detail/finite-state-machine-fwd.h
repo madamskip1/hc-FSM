@@ -1,6 +1,6 @@
 #pragma once
 
-namespace FSM
+namespace hcFSM
 {
     template <typename Transitions_Table, typename InitialState = void>
     class StateMachine;

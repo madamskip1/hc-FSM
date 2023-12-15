@@ -8,7 +8,7 @@ struct StateB {};
 struct EventA {};
 struct EventB {};
 
-namespace FSM
+namespace hcFSM
 {
     TEST(StateMachineTests, VariantFromTuple)
     {

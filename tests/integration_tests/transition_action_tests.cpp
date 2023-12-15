@@ -5,7 +5,7 @@
 #include "hcFSM/detail/transitions-table.h"
 #include "hcFSM/detail/finite-state-machine.h"
 
-namespace FSM
+namespace hcFSM
 {
     constexpr int INITIAL_VALUE = 0;
     constexpr int SOURCE_STATE_VALUE = 1;

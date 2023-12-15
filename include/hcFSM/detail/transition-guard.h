@@ -1,6 +1,6 @@
 #pragma once
 
-namespace FSM
+namespace hcFSM
 {
     #define CREATE_TRANSITION_GUARD(Name, SourceStateParam, EventParam,  MethodBody) \
         struct Name { \

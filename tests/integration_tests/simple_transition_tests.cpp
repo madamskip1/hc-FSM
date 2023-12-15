@@ -3,7 +3,7 @@
 #include "hcFSM/detail/transitions-table.h"
 #include "hcFSM/detail/finite-state-machine.h"
 
-namespace FSM
+namespace hcFSM
 {
     struct StateA {};
     struct StateB {};

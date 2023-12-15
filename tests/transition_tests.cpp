@@ -11,7 +11,7 @@ struct EventA : Event {};
 struct EventB : Event {};
 
 
-namespace FSM
+namespace hcFSM
 {
 	struct dummyCallableStruct
 	{

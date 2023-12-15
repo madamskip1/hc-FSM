@@ -1,7 +1,7 @@
 #pragma once
 #include <type_traits>
 
-namespace FSM
+namespace hcFSM
 {
 	struct NO_VALID_TRANSITION {};
 	struct AUTOMATIC_TRANSITION {};
