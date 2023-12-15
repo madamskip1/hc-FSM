@@ -1,21 +1,42 @@
-# FILEPATH: /home/maciej/Programowanie/Finite-State-Machine/test/CMakeLists.txt
-cmake_minimum_required(VERSION 3.11)
-project(YourProjectName)
-
 SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 macro(add_unit_test testname)
-    add_executable(unit_${testname} ${testname}.cpp)
-    target_link_libraries(unit_${testname} GTest::gtest_main)
-    add_test(NAME unit_${testname} COMMAND unit_${testname})
-    gtest_discover_tests(unit_${testname})
+    add_executable(
+        unit_${testname}
+        ${testname}.cpp
+    )
+    target_link_libraries(
+        unit_${testname}
+        PRIVATE
+        hcFSM::hcFSM
+        GTest::gtest_main)
+    add_test(
+        NAME unit_${testname}
+        COMMAND unit_${testname}
+    )
+    gtest_discover_tests(
+        unit_${testname}
+    )
 endmacro(add_unit_test)
 
 macro(add_integration_test testname)
-    add_executable(integration_${testname} integration_tests/${testname}.cpp)
-    target_link_libraries(integration_${testname} GTest::gtest_main)
-    add_test(NAME integration_${testname} COMMAND integration_${testname})
-    gtest_discover_tests(integration_${testname})
+    add_executable(
+        integration_${testname}
+        integration_tests/${testname}.cpp
+    )
+    target_link_libraries(
+        integration_${testname}
+        PRIVATE
+        hcFSM::hcFSM
+        GTest::gtest_main
+    )
+    add_test(
+        NAME integration_${testname}
+        COMMAND integration_${testname}
+    )
+    gtest_discover_tests(
+        integration_${testname}
+        )
 endmacro(add_integration_test)
 
 include(FetchContent)
