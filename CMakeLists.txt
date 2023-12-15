@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.11.0)
 
 project(
     hcFSM
-    VERSION 0.5.3
+    VERSION 0.5.4
     DESCRIPTION "hierarchical compile-time Finite State Machine"
     HOMEPAGE_URL "https://github.com/madamskip1/hc-FSM"
     LANGUAGES CXX
