@@ -54,7 +54,6 @@ FetchContent_MakeAvailable(googletest)
 include_directories(${googletest_SOURCE_DIR}/include)
 link_directories(${googletest_BINARY_DIR})
 
-enable_testing()
 
 add_unit_test(state_tests)
 add_unit_test(transition_tests)
