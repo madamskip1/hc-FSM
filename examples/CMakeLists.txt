@@ -1,4 +1,4 @@
-set(examples "")
+set(examples "Simple_example")
 
 
 foreach(example ${examples})
