@@ -149,4 +149,14 @@ namespace hcFSM
         auto isInInnerStateMachine2StateA = stateMachine.isInState<InnerStateMachine2, StateA>();
         EXPECT_EQ(isInInnerStateMachine2StateA, true);
     }
+
+    TEST(AutomaticTransitonTests, FromInitialState)
+    {
+        using TransitionsTable = hcFSM::TransitionsTable<
+            hcFSM::Transition<StateA, AUTOMATIC_TRANSITION, StateB>
+        >;
+
+        auto stateMachine = hcFSM::StateMachine<TransitionsTable>{};
+        EXPECT_EQ(stateMachine.isInState<StateB>(), true);
+    }
 }
