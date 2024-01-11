@@ -10,7 +10,7 @@
 
 namespace hcFSM
 {
-	template <typename Transitions_Table, typename InitialState>
+	template <typename Transitions_Table, typename InitialState, bool CallOnEntryOnInitialState>
 	class StateMachine
 	{
 		static_assert(isValidTransitionsTable_v<Transitions_Table>, "Transitions_Table must be a type of TransitionsTable, be valid and has at least one transition");
@@ -29,7 +29,7 @@ namespace hcFSM
 		constexpr StateMachine() 
 		{
 			statesVariant.template emplace<initial_state_type>();
-			if constexpr (has_onEntryNoEventArg_v<initial_state_type>)
+			if constexpr (CallOnEntryOnInitialState && has_onEntryNoEventArg_v<initial_state_type>)
 			{
 				std::get<initial_state_type>(statesVariant).onEntry();
 			}
