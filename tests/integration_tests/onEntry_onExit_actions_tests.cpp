@@ -254,4 +254,16 @@ namespace hcFSM
         ASSERT_EQ(stateMachine.isInState<StateA>(), true);
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnEntryNoEventParameter);
     }
+
+    TEST(OnExitonEntryActionsTests, shouldNotCallOnEntryOnInitializationOfInitialState)
+    {
+        using transition = Transition<StateA, EventA, StateA>;
+        using transitions_table = TransitionsTable<transition>;
+        StateA::value = ACTIONS_VALUE::NoValue;
+
+        auto stateMachine = StateMachine<transitions_table, StateA, false> {};
+
+        ASSERT_EQ(stateMachine.isInState<StateA>(), true);
+        EXPECT_EQ(StateA::value, ACTIONS_VALUE::NoValue);
+    }
 }
