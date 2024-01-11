@@ -29,6 +29,10 @@ namespace hcFSM
 		constexpr StateMachine() 
 		{
 			statesVariant.template emplace<initial_state_type>();
+			if constexpr (has_onEntryNoEventArg_v<initial_state_type>)
+			{
+				std::get<initial_state_type>(statesVariant).onEntry();
+			}
 		};
 
 		template <typename NewState>
