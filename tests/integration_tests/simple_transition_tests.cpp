@@ -48,7 +48,7 @@ namespace hcFSM
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
     }
 
-    TEST(SimpleTransitionsTests, shouldAutomaticalyTransitState)
+    TEST(SimpleTransitionsTests, shouldAutomaticallyTransitState)
     {
         using transition1 = Transition<StateA, EventA, StateB>;
         using transition2 = TransitionAutomatic<StateB, StateC>; // or Transition<StateB, AUTOMATIC_TRANSITION, StateC>
@@ -62,5 +62,16 @@ namespace hcFSM
 
         EXPECT_EQ(hadleEventResult, HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<StateC>(), true);
+    }
+
+    TEST(SimpleTransitionsTests, shouldAutomicallyTransitiFromInitialState)
+    {
+        using transition = TransitionAutomatic<StateA, StateB>; // or Transition<StateA, AUTOMATIC_TRANSITION, StateB>
+        using transitions_table = TransitionsTable<
+            transition
+        >;
+
+        auto stateMachine = StateMachine<transitions_table> {};
+        EXPECT_EQ(stateMachine.isInState<StateB>(), true);
     }
 }
