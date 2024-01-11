@@ -182,6 +182,7 @@ namespace hcFSM
         StateA::value = ACTIONS_VALUE::NoValue;
 
         auto stateMachine = StateMachine<transitions_table> {};
+        StateA::value = ACTIONS_VALUE::NoValue; // because of calling onEntry on initialization of initial state
         stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::NoValue);
