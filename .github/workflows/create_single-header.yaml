@@ -1,0 +1,41 @@
+name: Create single_header.h
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  create-single-header:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.2
+      
+      - name: Build single_header.h
+        run: python single_header/packager/main.py 
+
+      - name: Check if there was change to single_header.h
+        id: check_changes
+        run: echo ::set-output name=has_changes::$(if git diff --quiet; then echo "false"; else echo "true"; fi) 
+
+      - name: Get last commit hash
+        if: steps.check_changes.outputs.has_changes == 'true'
+        id: last_commit
+        run: echo "::set-output name=commit_hash::$(git log -1 --format=%h)"   
+
+            
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --global user.email "madamskip1@gmail.com"
+          git config --global user.name "Maciej Adamski (GitHub Actions)"
+          git add .
+          git commit -m "Generated single_header for ${{ steps.last_commit.outputs.commit_hash }}" -m "This commit was generated automatically by GitHub Actions. That action packed headers .h into one single-header.h file."
+          git push
