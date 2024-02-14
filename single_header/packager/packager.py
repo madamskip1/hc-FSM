@@ -70,7 +70,7 @@ class Packager:
         metadata_header += " * @date: " + str(date.today()) + "\n"
         metadata_header += " * @license: MIT License. Keep metadata_header intact. \n"
         if self.project_version is not None:
-            metadata_header += " * @version: " + project_version + "\n"
+            metadata_header += " * @version: " + self.project_version + "\n"
         metadata_header += " */"
         
         return metadata_header
