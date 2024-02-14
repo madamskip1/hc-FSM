@@ -6,7 +6,8 @@ here_path = os.path.abspath(os.path.dirname(__file__))
 
 
 def __save_single_header(single_header):
-    with open("single_header.h", "w") as file:
+    path_to_save = os.path.join(here_path, "../single_header.h")
+    with open(path_to_save, "w") as file:
         file.writelines(single_header)
 
 
