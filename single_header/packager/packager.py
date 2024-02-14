@@ -6,13 +6,12 @@ class Packager:
         self.include_files = set()
         self.files_content = []
 
-    def process_file(self, file_name):
-        with open(file_name, "r") as file:
-            file_content = file.readlines()
-            file_content = self.__remove_pragma_once(file_content)
-            self.__find_includes(file_content)
-            file_content = self.__remove_includes(file_content)
-            self.files_content.append(file_content)
+    def process_file(self, file):
+        file_content = file.readlines()
+        file_content = self.__remove_pragma_once(file_content)
+        self.__find_includes(file_content)
+        file_content = self.__remove_includes(file_content)
+        self.files_content.append(file_content)
             
     def pack_headers(self):
         single_header_content = []
