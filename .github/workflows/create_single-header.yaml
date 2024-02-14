@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.DEPLOY_SSH_PRIVATE }}
       
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -22,20 +24,18 @@ jobs:
 
       - name: Check if there was change to single_header.h
         id: check_changes
-        run: echo ::set-output name=has_changes::$(if git diff --quiet; then echo "false"; else echo "true"; fi) 
+        run: echo ::set-output name=has_changes::$(if git diff --quiet; then echo "true"; else echo "false"; fi) 
 
       - name: Get last commit hash
         if: steps.check_changes.outputs.has_changes == 'true'
         id: last_commit
         run: echo "::set-output name=commit_hash::$(git log -1 --format=%h)"   
 
-            
-
       - name: Commit and push changes
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           git config --global user.email "madamskip1@gmail.com"
-          git config --global user.name "Maciej Adamski (GitHub Actions)"
+          git config --global user.name "Maciej Adamski (Github Action bot)"
           git add .
-          git commit -m "Generated single_header for ${{ steps.last_commit.outputs.commit_hash }}" -m "This commit was generated automatically by GitHub Actions. That action packed headers .h into one single-header.h file."
+          git commit -m "Generated single_header by GH-Action after #${{ steps.last_commit.outputs.commit_hash }}" -m "This commit was generated automatically by GitHub Actions. Action packed headers .h into one single-header.h file. Single-header contains headers at commit #${{ steps.last_commit.outputs.commit_hash }}."
           git push
