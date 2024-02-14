@@ -5,7 +5,6 @@ class Packager:
     def __init__(self):
         self.include_files = set()
         self.files_content = []
-        
 
     def parse_file(self, file_name):
         with open(file_name, "r") as file:
@@ -14,6 +13,18 @@ class Packager:
             self.find_includes(file_content)
             file_content = self.remove_includes(file_content)
             self.files_content.append(file_content)
+            
+    def pack_headers(self):
+        single_header_content = []
+        single_header_content.append("#pragma once")
+        # to do header with autor, version date etc
+        single_header_content.append("\n\n")
+        single_header_content.extend(self.include_files)
+        single_header_content.append('\n')
+        for file_content in self.files_content:
+            single_header_content.extend(file_content)
+        
+        return single_header_content
 
     def find_includes(self, file_content):
         include_patern = re.compile(r'(#include\s*<.*>)')
@@ -24,7 +35,7 @@ class Packager:
             
             match = include_patern.match(line)
             if match:
-                self.include_files.add(match.group(1))
+                self.include_files.add(match.group(1) + '\n')
             else:
                 break  
     
