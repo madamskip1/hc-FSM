@@ -6,12 +6,12 @@ class Packager:
         self.include_files = set()
         self.files_content = []
 
-    def parse_file(self, file_name):
+    def process_file(self, file_name):
         with open(file_name, "r") as file:
             file_content = file.readlines()
-            file_content = self.remove_pragma_once(file_content)
-            self.find_includes(file_content)
-            file_content = self.remove_includes(file_content)
+            file_content = self.__remove_pragma_once(file_content)
+            self.__find_includes(file_content)
+            file_content = self.__remove_includes(file_content)
             self.files_content.append(file_content)
             
     def pack_headers(self):
@@ -26,7 +26,7 @@ class Packager:
         
         return single_header_content
 
-    def find_includes(self, file_content):
+    def __find_includes(self, file_content):
         include_patern = re.compile(r'(#include\s*<.*>)')
         for line in file_content:
             line = line.strip()
@@ -39,11 +39,11 @@ class Packager:
             else:
                 break  
     
-    def remove_pragma_once(self, file_content):
+    def __remove_pragma_once(self, file_content):
         file_content = file_content[1:]  # Remove first line, because its always #pragma once
         return file_content
 
-    def remove_includes(self, file_content):
+    def __remove_includes(self, file_content):
         for (i, line) in enumerate(file_content):
             if not(not line or line.startswith("#include") or line == ""):
                 break
