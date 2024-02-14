@@ -1,10 +1,12 @@
 import re
+from datetime import date
 
 
 class Packager:
-    def __init__(self):
+    def __init__(self, project_version = None):
         self.include_files = set()
         self.files_content = []
+        self.project_version = project_version
 
     def process_file(self, file):
         file_content = file.readlines()
@@ -16,8 +18,9 @@ class Packager:
             
     def pack_headers(self):
         single_header_content = []
+        single_header_content.append(self.__prepare_metadata_header())
+        single_header_content.append("\n\n")
         single_header_content.append("#pragma once")
-        # to do header with autor, version date etc
         single_header_content.append("\n\n")
         single_header_content.extend(self.include_files)
         for file_content in self.files_content:
@@ -58,3 +61,16 @@ class Packager:
             last_non_blank_line -= 1
             
         return file_content[:last_non_blank_line]
+    
+    def __prepare_metadata_header(self):
+        metadata_header = "/**\n"
+        metadata_header += " * @author: Adamski Maciej (madamskip1)\n"
+        metadata_header += " * @project: hcFSM\n"
+        metadata_header += " * @project_url: https://github.com/madamskip1/hc-FSM\n"
+        metadata_header += " * @date: " + str(date.today()) + "\n"
+        metadata_header += " * @license: MIT License. Keep metadata_header intact. \n"
+        if self.project_version is not None:
+            metadata_header += " * @version: " + project_version + "\n"
+        metadata_header += " */"
+        
+        return metadata_header
