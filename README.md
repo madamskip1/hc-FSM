@@ -8,6 +8,8 @@
 [![Build clang++](https://github.com/madamskip1/hc-FSM/actions/workflows/build_clang++.yaml/badge.svg?branch=main)](https://github.com/madamskip1/hc-FSM/actions/workflows/build_clang++.yaml)
 [![Build MSVC](https://github.com/madamskip1/hc-FSM/actions/workflows/build_msvc.yaml/badge.svg?branch=main)](https://github.com/madamskip1/hc-FSM/actions/workflows/build_msvc.yaml)
 
+**hcFSM** library rocks for building Finite State Machines (FSM) in C++, even hierarchical ones. It's all about simplicity and efficiency, letting you organize states easily and compile quickly. With its cool C++ template magic, runtime slowdowns are a thing of the past. Whether you're into embedded systems, gaming, or just coding for fun, this library has your back for smooth state-based behavior.
+
 ## Features
 
 |Feature| Status | Added in |
