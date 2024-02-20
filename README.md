@@ -31,7 +31,7 @@ Documentation can be found under [doc](https://github.com/madamskip1/hc-FSM/tree
 
 ### Simple usage example
 
-Provided example illustrates implementation for simple light control system (or what ever what can be on and off). The system involves a light with two states: `Off` and `On`. The transition between them (toggle) is triggered by a `ButtonClicked` event.
+Provided example illustrates implementation for simple light control system (or whatever what can be on and off). The system involves a light with two states: `Off` and `On`. The transition between them (toggle) is triggered by a `ButtonClicked` event.
 
 <p align="center">
   <img src="examples/simple_example/simple_example_diagram.png" height="150px">  
@@ -73,7 +73,7 @@ More complex usage examples can be found in [examples dir](https://github.com/ma
 
 The hc-FSM library provides at least two convenient methods for integration.
 First, single header can be directly included in a project.
-Alternatively, for a more organized approach or when dealing with larger projects, the library can be effortlessly integrated using CMake's FetchContent. This allows for a easy incorporation into a build process with automatic downloading hc-FSM library.
+Alternatively, for an more organized approach or when dealing with larger projects, the library can be effortlessly integrated using CMake's FetchContent. This allows for easy incorporation into the build process with automatic downloading hc-FSM library.
 
 ### Single header
 1. Download single header ([single_header/hcFSM.h](/single_header/hcFSM.h)) and put into a project
