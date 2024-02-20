@@ -61,12 +61,6 @@ int main()
 }
 ```
 
-### More complex examples
-
-More complex usage examples can be found in [examples dir](https://github.com/madamskip1/hc-FSM/tree/main/examples/):
-- NPC AI -
-- Elevator
-
 ## Integration/Installation
 
 [![Realase version](https://badgen.net/github/release/madamskip1/hc-FSM/)](https://github.com/madamskip1/hc-FSM/releases)
