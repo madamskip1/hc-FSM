@@ -74,10 +74,12 @@ First, single header can be directly included in a project.
 Alternatively, for a more organized approach or when dealing with larger projects, the library can be effortlessly integrated using CMake's FetchContent. This allows for a easy incorporation into a build process with automatic downloading hc-FSM library.
 
 ### Single header
-1. Download single header and put into a project
-2. Include it in files that use this library
+1. Download single header ([single_header/hcFSM.h](/single_header/hcFSM.h)) and put into a project
+2. Include it as any other headers
 ```c++
- #include "{path}/hc-fsm.h"
+ #include <{path}/hcFSM.h>
+or
+ #include "{path}/hcFSM.h>
 ```
 
 ### CMake's FetchContent
@@ -88,12 +90,12 @@ include(FetchContent)
 
 # Download hc-FSM
 FetchContent_Declare(
-    hc_fsm
+    hcFSM
     GIT_REPOSITORY https://https://github.com/madamskip1/hc-FSM.git
     GIT_TAG v1.0.0
 )
 FetchContent_MakeAvailable(hc_fsm)
 
 # link hc-FSM to target/project
-target_link_libraries(target_project_name PRIVATE hc_fsm)
+target_link_libraries(target_project_name PRIVATE hcFSM)
 ```
