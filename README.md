@@ -24,7 +24,7 @@
 
 ## Documentation
 
-Documentation can be found under [doc](https://github.com/madamskip1/hc-FSM/tree/main/examples/).
+Detailed documentation can be found on [Wiki page](../../wiki/).
 
 
 ## Example
