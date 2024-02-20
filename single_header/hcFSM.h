@@ -2,15 +2,15 @@
  * @author: Adamski Maciej (madamskip1)
  * @project: hcFSM
  * @project_url: https://github.com/madamskip1/hc-FSM
- * @date: 2024-02-14
+ * @date: 2024-02-20
  * @license: MIT License. Keep metadata_header intact. 
  * @version: 0.5.6
  */
 
 #pragma once
 
-#include <tuple>
 #include <type_traits>
+#include <tuple>
 #include <variant>
 
 namespace hcFSM
