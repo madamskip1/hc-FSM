@@ -56,7 +56,6 @@ link_directories(${googletest_BINARY_DIR})
 
 
 add_unit_test(state_tests)
-add_unit_test(transition_tests)
 add_unit_test(state_machine_tests)
 add_unit_test(hierarchical_state_machine_tests)
 add_unit_test(automatic_transition_tests)
@@ -64,6 +63,10 @@ add_unit_test(initial_states_ctor_dtor_tests)
 add_unit_test(transition_action_tests)
 add_unit_test(transition_guard_tests)
 add_unit_test(handle_event_result_tests)
+add_unit_test(transition_struct_tests)
+add_unit_test(transition_trait_tests)
+add_unit_test(transition_table_tests)
+
 
 add_integration_test(onEntry_onExit_actions_tests)
 add_integration_test(guard_action_tests)
