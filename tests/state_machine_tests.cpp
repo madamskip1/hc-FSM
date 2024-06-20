@@ -3,13 +3,13 @@
 #include "hcFSM/detail/transition.h"
 #include "hcFSM/detail/transitions-table.h"
 
-struct StateA {};
-struct StateB {};
-struct EventA {};
-struct EventB {};
-
 namespace hcFSM
 {
+    struct StateA {};
+    struct StateB {};
+    struct EventA {};
+    struct EventB {};
+
     TEST(StateMachineTests, VariantFromTuple)
     {
         using SimpleTuple = std::tuple<int, float, double>;

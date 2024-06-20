@@ -2,15 +2,16 @@
 #include "hcFSM/detail/state-machine.h"
 #include "hcFSM/detail/state.h"
 
-struct StateA {};
-struct StateB {};
-struct StateInnerA {};
-struct StateInnerB {};
-struct EventA {};
-struct EventB {};
 
 namespace hcFSM
 {
+    struct StateA {};
+    struct StateB {};
+    struct StateInnerA {};
+    struct StateInnerB {};
+    struct EventA {};
+    struct EventB {};
+
     TEST(HierarchicalStateMachineTests, IsStateMachine)
     {
         EXPECT_EQ(isStateMachine<void>::value, false);
