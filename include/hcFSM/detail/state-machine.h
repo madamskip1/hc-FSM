@@ -113,19 +113,27 @@ namespace hcFSM
 					{
 						const auto innerTransitResult = innerStateMachineTransition(currentState, event);
 
-						if (innerTransitResult == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE)
+						if (innerTransitResult == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE ||
+							innerTransitResult == HandleEventResult::EXIT_INNER_STATE_MACHINE)
 						{
-							return normalTransition(currentState, AUTOMATIC_TRANSITION{});
-						}
-						else if (innerTransitResult != HandleEventResult::EXIT_INNER_STATE_MACHINE)
-						{
-							return innerTransitResult;
+							if (innerTransitResult == HandleEventResult::EXIT_INNER_STATE_MACHINE)
+							{
+								if (const auto exitInnerStateMachineResult = normalTransition(currentState, event);
+									isEventResultOk(exitInnerStateMachineResult))
+								{
+									return exitInnerStateMachineResult;
+								}
+							}
+
+							return tryAutomaticTransition(currentState);
 						}
 
-						// if current state in inner state machine is ExitState then we need to transit to next state, go on to normal transition
+						return innerTransitResult;
 					}
-					
-					return normalTransition(currentState, event);
+					else
+					{
+						return normalTransition(currentState, event);
+					}
 				};
 
 			return std::visit(lambda, statesVariant);
@@ -138,12 +146,22 @@ namespace hcFSM
 
 			if constexpr (isValidTransition_v<transition>)
 			{
-				using NextStateType = getNextState_t<transition>;
-				const auto transitResult = transit<transition>(currentState, event);
-
-				if constexpr (!isStateMachine_v<NextStateType> && hasAutomaticTransition_v<transitions_table, NextStateType>)
+				auto transitResult = transit<transition>(currentState, event);
+				
+				if (!isEventResultOk(transitResult))
 				{
-					return tryAutomaticTransition(std::get<NextStateType>(statesVariant));
+					return transitResult;
+				}
+
+				using NextStateType = getNextState_t<transition>;
+				if constexpr (!isStateMachine_v<NextStateType> && !std::is_same_v<NextStateType, ExitState>)
+				{
+					const auto automaticTransitionResult = tryAutomaticTransition(std::get<NextStateType>(statesVariant));
+					
+					if (isEventResultOk(automaticTransitionResult))
+					{
+						transitResult = automaticTransitionResult;
+					}
 				}
 
 				return transitResult;
@@ -158,13 +176,6 @@ namespace hcFSM
 		constexpr HandleEventResult innerStateMachineTransition(InnerStateMachineType& innerStateMachine, const EventTriggerType& event) const
 		{
 			const auto innerTransitionResult = innerStateMachine.handleEvent(event);
-			if (innerTransitionResult == HandleEventResult::PROCESSED ||
-				innerTransitionResult == HandleEventResult::PROCESSED_SAME_STATE ||
-				innerTransitionResult == HandleEventResult::PROCESSED_INNER_STATE_MACHINE)
-			{
-				return HandleEventResult::PROCESSED_INNER_STATE_MACHINE;
-			}
-			
 			return innerTransitionResult;
 		}
 
@@ -175,23 +186,23 @@ namespace hcFSM
 			{
 				using transition = getTransition_t<transitions_table, CurrentStateType, AUTOMATIC_TRANSITION>;
 				using NextStateType = getNextState_t<transition>;
+				
+				auto transitResult = transit<transition>(currentState, AUTOMATIC_TRANSITION{});
 
-				if constexpr (std::is_same_v<NextStateType, ExitState>)
+				if (transitResult == HandleEventResult::EXIT_INNER_STATE_MACHINE)
 				{
-					tryCallOnExit(currentState, AUTOMATIC_TRANSITION{});
 					return HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE;
 				}
-				
-				const auto transitResult = transit<transition>(currentState, AUTOMATIC_TRANSITION{});
 
 				if (isEventResultOk(transitResult))
 				{
-					if (auto nextAutomaticTransitionsResult = tryAutomaticTransition(std::get<NextStateType>(statesVariant));
-							nextAutomaticTransitionsResult != HandleEventResult::NO_VALID_TRANSITION)
+					if (const auto nextAutomaticTransitionsResult = tryAutomaticTransition(std::get<NextStateType>(statesVariant));
+							isEventResultOk(nextAutomaticTransitionsResult))
 					{
-						return nextAutomaticTransitionsResult;
+						transitResult = nextAutomaticTransitionsResult;
 					}
 				}
+
 				return transitResult;
 			}
 			else
@@ -238,6 +249,8 @@ namespace hcFSM
 					return HandleEventResult::PROCESSED;
 				}
 			}
+
+			return HandleEventResult::NO_VALID_TRANSITION;
 		}
 
 

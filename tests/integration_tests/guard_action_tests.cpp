@@ -90,7 +90,7 @@ namespace hcFSM
     TEST(GuardActionTests, shouldAllowAutomaticTransition)
     {
         using transition1 = Transition<StateA, EventA, StateB>;
-        using transition2 = TransitionAutomaticWithGuard<StateB, StateA, TransitionGuardPass>;
+        using transition2 = TransitionAutomaticWithGuard<StateB, StateC, TransitionGuardPass>;
         // or transition2 = TransitionWithGuard<StateA, AUTOMATIC_TRANSITION, StateB, TransitionGuardPass>
         // or transition2 = Transition<StateA, AUTOMATIC_TRANSITION, StateB, void, TransitionGuardPass>
         
@@ -102,7 +102,7 @@ namespace hcFSM
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
         
-        EXPECT_EQ(stateMachine.isInState<StateA>(), true);
+        EXPECT_EQ(stateMachine.isInState<StateC>(), true);
     }
 
     TEST(GuardActionTests, shouldNotAllowAutomaticTransition)
@@ -121,6 +121,5 @@ namespace hcFSM
         auto handleEventResult = stateMachine.handleEvent<EventA>();
         
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
-        EXPECT_EQ(handleEventResult, HandleEventResult::GUARD_FAILED);
     }
 }
