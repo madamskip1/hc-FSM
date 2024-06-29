@@ -39,7 +39,7 @@ namespace hcFSM
         auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM::StateA
         auto handleEventResult = stateMachine.handleEvent<EventB>();
 
-        EXPECT_EQ(handleEventResult, HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+        EXPECT_EQ(handleEventResult, HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<innerSM>(), true);
         auto isInInnerStateB = stateMachine.isInState<innerSM, StateB>();
         EXPECT_EQ(isInInnerStateB, true);
@@ -110,7 +110,7 @@ namespace hcFSM
         auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM::StateA
         auto handleResultEvent = stateMachine.handleEvent<EventA>();
         
-        EXPECT_EQ(handleResultEvent, HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+        EXPECT_EQ(handleResultEvent, HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<innerSM>(), true);
         auto isInInnerStateC = stateMachine.isInState<innerSM, StateC>();
         EXPECT_EQ(isInInnerStateC, true);   

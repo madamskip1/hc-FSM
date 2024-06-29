@@ -109,12 +109,12 @@ namespace hcFSM
         auto autoTransitResult1 = stateMachine.handleEvent(EventA{});
         auto isInInnerStateMachine2StateC = stateMachine.isInState<InnerStateMachine1, InnerStateMachine2, StateC>();
         EXPECT_EQ(isInInnerStateMachine2StateC, true);
-        EXPECT_EQ(autoTransitResult1, hcFSM::HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+        EXPECT_EQ(autoTransitResult1, hcFSM::HandleEventResult::PROCESSED);
 
         auto autoTransitResult2 = stateMachine.handleEvent(EventA{});
         auto isInInnerStateMachine3StateA = stateMachine.isInState<InnerStateMachine1, InnerStateMachine3, StateA>();
         EXPECT_EQ(isInInnerStateMachine3StateA, true);
-        EXPECT_EQ(autoTransitResult2, hcFSM::HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+        EXPECT_EQ(autoTransitResult2, hcFSM::HandleEventResult::PROCESSED);
 
         stateMachine.handleEvent(EventA{});
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);

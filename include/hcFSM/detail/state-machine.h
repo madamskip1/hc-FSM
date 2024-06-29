@@ -127,11 +127,7 @@ namespace hcFSM
 
 							return tryAutomaticTransition(currentState);
 						}
-						
-						if (isEventResultOk(innerTransitResult))
-						{
-							return HandleEventResult::PROCESSED_INNER_STATE_MACHINE;
-						}
+
 						return innerTransitResult;
 					}
 					else

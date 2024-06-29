@@ -149,7 +149,7 @@ namespace hcFSM
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
         auto isInInnerStateResult2 = mainStateMachine.isInState<InnerStateMachine, StateInnerB>();
         EXPECT_EQ(isInInnerStateResult2, true);
-        EXPECT_EQ(handleEventResult2, hcFSM::HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+        EXPECT_EQ(handleEventResult2, hcFSM::HandleEventResult::PROCESSED);
 
         auto handleEventResult3 = mainStateMachine.handleEvent<EventB>();
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
@@ -196,19 +196,19 @@ namespace hcFSM
         EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
         auto isInInnerStateResult2 = stateMachine.isInState<InnerStateMachine1, InnerStateMachine2, StateInnerA>();
         EXPECT_EQ(isInInnerStateResult2, true);
-        EXPECT_EQ(handleEventResult2, hcFSM::HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+        EXPECT_EQ(handleEventResult2, hcFSM::HandleEventResult::PROCESSED);
 
         auto handleEventResult3 = stateMachine.handleEvent<EventA>();
         EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
         auto isInInnerStateResult3 = stateMachine.isInState<InnerStateMachine1, InnerStateMachine2, InnerStateMachine3, StateInnerA>();
         EXPECT_EQ(isInInnerStateResult3, true);
-        EXPECT_EQ(handleEventResult3, hcFSM::HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+        EXPECT_EQ(handleEventResult3, hcFSM::HandleEventResult::PROCESSED);
         
         auto handleEventResult4 = stateMachine.handleEvent<EventA>();
         EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
         auto isInInnerStateResult4 = stateMachine.isInState<InnerStateMachine1, InnerStateMachine2, StateInnerB>();
         EXPECT_EQ(isInInnerStateResult4, true);
-        EXPECT_EQ(handleEventResult4, hcFSM::HandleEventResult::PROCESSED_INNER_STATE_MACHINE);
+        EXPECT_EQ(handleEventResult4, hcFSM::HandleEventResult::PROCESSED);
 
         auto handleEventResult5 = stateMachine.handleEvent<EventB>();
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
