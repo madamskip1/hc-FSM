@@ -16,6 +16,8 @@ namespace hcFSM
     {
         return result == HandleEventResult::PROCESSED ||
             result == HandleEventResult::PROCESSED_SAME_STATE ||
-            result == HandleEventResult::PROCESSED_INNER_STATE_MACHINE;
+            result == HandleEventResult::PROCESSED_INNER_STATE_MACHINE ||
+            result == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE ||
+            result == HandleEventResult::EXIT_INNER_STATE_MACHINE;
     }
 }
