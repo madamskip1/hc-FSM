@@ -108,7 +108,8 @@ namespace hcFSM
 			const auto lambda = [this, &event](auto& currentState) -> HandleEventResult
 				{
 					using CurrentStateType = std::decay_t<decltype(currentState)>;
-
+					
+					
 					if constexpr (isStateMachine_v<CurrentStateType>)
 					{
 						const auto innerTransitResult = innerStateMachineTransition(currentState, event);
@@ -163,7 +164,7 @@ namespace hcFSM
 						transitResult = automaticTransitionResult;
 					}
 				}
-
+				
 				return transitResult;
 			}
 			else

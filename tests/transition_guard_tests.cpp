@@ -19,6 +19,14 @@ namespace hcFSM
             return true;
         }
     );
+    
+    CREATE_TRANSITION_GUARD(GuardWithState_test_guard, currentState, event,
+        {
+            return currentState.value == 1 ? true : false;
+        }
+    );
+
+
 
     TEST(TransitionGuardTests, CreateGuard)
     {
@@ -27,11 +35,7 @@ namespace hcFSM
         EXPECT_EQ(CreateGuard_test_guard {} (stateA, eventA), true);
     }
 
-    CREATE_TRANSITION_GUARD(GuardWithState_test_guard, currentState, event,
-        {
-            return currentState.value == 1 ? true : false;
-        }
-    );
+    
 
     TEST(TransitionGuardTests, GuardWithState)
     {
@@ -44,7 +48,7 @@ namespace hcFSM
         EXPECT_EQ(GuardWithState_test_guard {} (stateA, eventA), true);
     }
 
-    TEST(TransitionGuardTests, hasGuard_withGeneratedGuard)
+    TEST(TransitionGuardTests, transitionHasGuard_withGeneratedGuard)
     {
         using transition = Transition<StateA, EventA, StateB, void, CreateGuard_test_guard>;
         ASSERT_EQ(hasGuard_v<transition>, true);
@@ -65,13 +69,16 @@ namespace hcFSM
         ASSERT_EQ(hasGuard_v<transition2>, true);
 
         auto stateMachine = StateMachine<transitions_table>{};
+
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
 
         auto handleEventResult1 = stateMachine.handleEvent(EventA{});
+
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
         EXPECT_EQ(handleEventResult1, HandleEventResult::GUARD_FAILED);
 
         auto handleEventResult2 = stateMachine.handleEvent(EventB{});
+        
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
         EXPECT_EQ(handleEventResult2, HandleEventResult::PROCESSED);
     }

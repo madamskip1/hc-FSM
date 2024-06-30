@@ -2,33 +2,16 @@
 #include "hcFSM/detail/state-machine.h"
 #include "hcFSM/detail/state.h"
 
+struct StateA {};
+struct StateB {};
+struct StateInnerA {};
+struct StateInnerB {};
+struct EventA {};
+struct EventB {};
 
 namespace hcFSM
 {
-    struct StateA {};
-    struct StateB {};
-    struct StateInnerA {};
-    struct StateInnerB {};
-    struct EventA {};
-    struct EventB {};
-
-    TEST(HierarchicalStateMachineTests, IsStateMachine)
-    {
-        EXPECT_EQ(isStateMachine<void>::value, false);
-        EXPECT_EQ(isStateMachine_v<void>, false);
-        EXPECT_EQ(isStateMachine<StateA>::value, false);
-        EXPECT_EQ(isStateMachine_v<StateA>, false);
-
-        using InnerStateTransitions = hcFSM::TransitionsTable<
-            hcFSM::Transition<StateInnerA, EventA, StateInnerB>,
-            hcFSM::Transition<StateInnerB, EventB, hcFSM::ExitState>
-            >;
-        using InnerStateMachine = hcFSM::StateMachine<InnerStateTransitions>;
-
-        EXPECT_EQ(isStateMachine<InnerStateMachine>::value, true);
-        EXPECT_EQ(isStateMachine_v<InnerStateMachine>, true);
-    }
-
+ 
     TEST(HierarchicalStateMachine, isInState_Inner)
     {
         using InnerStateTransitions = hcFSM::TransitionsTable<
@@ -41,7 +24,9 @@ namespace hcFSM
             hcFSM::Transition<StateA, EventA, InnerStateMachine>,
             hcFSM::Transition<InnerStateMachine, EventB, StateB>
         >;
+
         auto mainStateMachine = hcFSM::StateMachine<Transitions>{};
+
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), true);
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), false);
@@ -51,6 +36,7 @@ namespace hcFSM
         EXPECT_EQ(isInInnerStateResult2, false);
 
         mainStateMachine.forceTransition<InnerStateMachine>();
+
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
@@ -72,14 +58,17 @@ namespace hcFSM
         >;
 
         auto mainStateMachine = hcFSM::StateMachine<Transitions>{};
+
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), true);
 
         mainStateMachine.forceTransition<InnerStateMachine>();
+
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);  
         auto isInInnerStateResult1 = mainStateMachine.isInState<InnerStateMachine, StateInnerA>();
         EXPECT_EQ(isInInnerStateResult1, true);
 
         mainStateMachine.forceTransition<InnerStateMachine, StateInnerB>();
+
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
         auto isInInnerStateResult2 = mainStateMachine.isInState<InnerStateMachine, StateInnerB>();
         EXPECT_EQ(isInInnerStateResult2, true);
@@ -98,11 +87,13 @@ namespace hcFSM
         >;
 
         auto mainStateMachine = hcFSM::StateMachine<Transitions>{};
+
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), true);
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), false);
 
         auto handleEventResult1 = mainStateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
@@ -112,6 +103,7 @@ namespace hcFSM
         
 
         auto handleEventResult2 = mainStateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
@@ -133,11 +125,13 @@ namespace hcFSM
             hcFSM::Transition<InnerStateMachine, EventB, StateB>
         >;
         auto mainStateMachine = hcFSM::StateMachine<Transitions>{};
+
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), true);
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), false);
 
         auto handleEventResult1 = mainStateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);auto isInInnerStateResult1 = mainStateMachine.isInState<InnerStateMachine, StateInnerA>();
@@ -145,6 +139,7 @@ namespace hcFSM
         EXPECT_EQ(handleEventResult1, hcFSM::HandleEventResult::PROCESSED);
         
         auto handleEventResult2 = mainStateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), false);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), true);
@@ -153,6 +148,7 @@ namespace hcFSM
         EXPECT_EQ(handleEventResult2, hcFSM::HandleEventResult::PROCESSED);
 
         auto handleEventResult3 = mainStateMachine.handleEvent<EventB>();
+
         EXPECT_EQ(mainStateMachine.isInState<StateA>(), false);
         EXPECT_EQ(mainStateMachine.isInState<StateB>(), true);
         EXPECT_EQ(mainStateMachine.isInState<InnerStateMachine>(), false);
@@ -185,33 +181,39 @@ namespace hcFSM
         >;
 
         auto stateMachine = hcFSM::StateMachine<Transitions>{};
+
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
 
         auto handleEventResult1 = stateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
         auto isInInnerStateResult1 = stateMachine.isInState<InnerStateMachine1, StateInnerA>();
         EXPECT_EQ(isInInnerStateResult1, true);
         EXPECT_EQ(handleEventResult1, hcFSM::HandleEventResult::PROCESSED);
 
         auto handleEventResult2 = stateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
         auto isInInnerStateResult2 = stateMachine.isInState<InnerStateMachine1, InnerStateMachine2, StateInnerA>();
         EXPECT_EQ(isInInnerStateResult2, true);
         EXPECT_EQ(handleEventResult2, hcFSM::HandleEventResult::PROCESSED);
 
         auto handleEventResult3 = stateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
         auto isInInnerStateResult3 = stateMachine.isInState<InnerStateMachine1, InnerStateMachine2, InnerStateMachine3, StateInnerA>();
         EXPECT_EQ(isInInnerStateResult3, true);
         EXPECT_EQ(handleEventResult3, hcFSM::HandleEventResult::PROCESSED);
         
         auto handleEventResult4 = stateMachine.handleEvent<EventA>();
+
         EXPECT_EQ(stateMachine.isInState<InnerStateMachine1>(), true);
         auto isInInnerStateResult4 = stateMachine.isInState<InnerStateMachine1, InnerStateMachine2, StateInnerB>();
         EXPECT_EQ(isInInnerStateResult4, true);
         EXPECT_EQ(handleEventResult4, hcFSM::HandleEventResult::PROCESSED);
 
         auto handleEventResult5 = stateMachine.handleEvent<EventB>();
+        
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
         EXPECT_EQ(handleEventResult5, hcFSM::HandleEventResult::PROCESSED);
     }

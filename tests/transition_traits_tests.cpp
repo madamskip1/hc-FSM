@@ -10,13 +10,12 @@ struct EventB {};
 
 namespace hcFSM
 {
-    struct dummyCallableStruct
+    struct dummyCallableStruct3Args
 	{
 		void operator() (StateA&, EventA&, StateB&) {};
 	};
 
-	struct dummyCallableStruct2
-	struct dummyCallableStruct2
+	struct dummyCallableStruct2Args
 	{
 		void operator() (StateA&, EventA&) {};
 	};
@@ -58,12 +57,10 @@ namespace hcFSM
 
     TEST(TransitionTraitsTests, getAction)
 	{
-		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct>;
-		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct>;
+		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct3Args>;
 		using transitionNoAction = Transition<StateA, EventB, StateB>;
 
-		constexpr bool thereIsAction = std::is_same_v<dummyCallableStruct, getAction_t<transition>>;
-		constexpr bool thereIsAction = std::is_same_v<dummyCallableStruct, getAction_t<transition>>;
+		constexpr bool thereIsAction = std::is_same_v<dummyCallableStruct3Args, getAction_t<transition>>;
 		EXPECT_EQ(thereIsAction, true);
 
 		constexpr auto noActionVoid = std::is_same_v<void, getAction_t<transitionNoAction>>;
@@ -72,8 +69,7 @@ namespace hcFSM
 
     TEST(TransitionTraitsTests, hasAction)
 	{
-		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct>;
-		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct>;
+		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct3Args>;
 		using transitionNoAction = Transition<StateA, EventB, StateB>;
 
 		EXPECT_EQ(hasAction<transition>::value, true);
@@ -84,8 +80,7 @@ namespace hcFSM
 
     TEST(TransitionTraitsTests, hasGuard)
 	{
-		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct, dummyCallableStruct2>;
-		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct, dummyCallableStruct2>;
+		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct3Args, dummyCallableStruct2Args>;
 		using transitionNoGuard = Transition<StateA, EventB, StateB>;
 
 		EXPECT_EQ(hasGuard<transition>::value, true);
@@ -96,12 +91,10 @@ namespace hcFSM
 
     TEST(TransitionTraitsTests, getGuard)
 	{
-		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct, dummyCallableStruct2>;
-		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct, dummyCallableStruct2>;
+		using transition = Transition<StateA, EventA, StateB, dummyCallableStruct3Args, dummyCallableStruct2Args>;
 		using transitionNoGuard = Transition<StateA, EventB, StateB>;
 
-		constexpr auto is_same_guard_type = std::is_same_v<dummyCallableStruct2, getGuard_t<transition>>;
-		constexpr auto is_same_guard_type = std::is_same_v<dummyCallableStruct2, getGuard_t<transition>>;
+		constexpr auto is_same_guard_type = std::is_same_v<dummyCallableStruct2Args, getGuard_t<transition>>;
 		EXPECT_EQ(is_same_guard_type, true);
 
 		constexpr auto noGuardVoid = std::is_same_v<void, getGuard_t<transitionNoGuard>>;

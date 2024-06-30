@@ -150,7 +150,9 @@ namespace hcFSM
         using transitions_table = TransitionsTable<
             transition1
         >;
+        
         auto stateMachine = StateMachine<transitions_table>{};
+
         EXPECT_EQ(MyClass1::defaultConstructorCalls, 1);
         EXPECT_EQ(MyClass1::parameterizedConstructorCalls, 0);
         EXPECT_EQ(MyClass1::copyConstructorCalls, 0);
@@ -176,7 +178,9 @@ namespace hcFSM
         using transitions_table = TransitionsTable<
             transition1
         >;
+
         auto stateMachine = StateMachine<transitions_table, MyClass2>{};
+
         EXPECT_EQ(MyClass1::defaultConstructorCalls, 0);
         EXPECT_EQ(MyClass1::parameterizedConstructorCalls, 0);
         EXPECT_EQ(MyClass1::copyConstructorCalls, 0);

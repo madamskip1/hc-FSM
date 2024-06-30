@@ -13,7 +13,7 @@ namespace hcFSM
 	struct EventA  {};
 	struct EventB {};
 	
-	struct dummyCallableStruct
+	struct dummyCallableStruct2Args
 	{
 		void operator() (StateA&, EventA&) {};
 	};
@@ -34,7 +34,7 @@ namespace hcFSM
 
 	TEST(TransitionStructMembersTests, TransitionWithoutActionWithGuard)
 	{
-		using transition = TransitionWithGuard<StateA, EventA, StateB, dummyCallableStruct>;
+		using transition = TransitionWithGuard<StateA, EventA, StateB, dummyCallableStruct2Args>;
 
 		constexpr auto is_same_transition_before_state_type = std::is_same_v<StateA, typename transition::before_state_type>;
 		EXPECT_EQ(is_same_transition_before_state_type, true);
@@ -48,7 +48,7 @@ namespace hcFSM
 		constexpr auto noActionVoid = std::is_same_v<void, typename transition::action_type>;
 		EXPECT_EQ(noActionVoid, true);
 
-		constexpr auto is_same_guard_type = std::is_same_v<dummyCallableStruct, typename transition::guard_type>;
+		constexpr auto is_same_guard_type = std::is_same_v<dummyCallableStruct2Args, typename transition::guard_type>;
 		EXPECT_EQ(is_same_guard_type, true);
 	}
 }

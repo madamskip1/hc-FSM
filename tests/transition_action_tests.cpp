@@ -32,6 +32,15 @@ namespace hcFSM
         }
     );
 
+    CREATE_TRANSITION_ACTION(ActionWithStates_test_action, currentState, event, nextState,
+        {
+            currentState.setValue(1);
+            nextState.value = event.value;
+        }
+    );
+
+
+
     TEST(TransitionActionTests, CreateAction)
     {
         int currentState = 0;
@@ -42,13 +51,6 @@ namespace hcFSM
         EXPECT_EQ(event, 2);
         EXPECT_EQ(nextState, 3);
     }
-
-    CREATE_TRANSITION_ACTION(ActionWithStates_test_action, currentState, event, nextState,
-        {
-            currentState.setValue(1);
-            nextState.value = event.value;
-        }
-    );
 
     TEST(TransitionActionTests, ActionWithStates)
     {
@@ -75,7 +77,9 @@ namespace hcFSM
         ASSERT_EQ(hasAction_v<transition>, true);
 
         auto stateMachine = StateMachine<TransitionsTable<transition>>{};
+
         stateMachine.handleEvent(EventA{});
+        
         ASSERT_EQ(stateMachine.isInState<StateB>(), true);
         EXPECT_EQ(stateMachine.getState<StateB>().value, 3);
     }

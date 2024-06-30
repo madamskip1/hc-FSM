@@ -39,6 +39,7 @@ namespace hcFSM
         >;
 
         auto stateMachine = StateMachine<transitions_table> {};
+
         stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
@@ -52,6 +53,7 @@ namespace hcFSM
         >;
 
         auto stateMachine = StateMachine<transitions_table> {};
+
         auto handleEventResult = stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
@@ -67,6 +69,7 @@ namespace hcFSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.getState<StateC>().value = 1;
+
         auto handleEventResult = stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
@@ -81,6 +84,7 @@ namespace hcFSM
 
         auto stateMachine = StateMachine<transitions_table> {};
         stateMachine.getState<StateC>().value = 0;
+
         auto handleEventResult = stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(stateMachine.isInState<StateC>(), true);
@@ -100,6 +104,7 @@ namespace hcFSM
         >;
 
         auto stateMachine = StateMachine<transitions_table> {};
+
         stateMachine.handleEvent<EventA>();
         
         EXPECT_EQ(stateMachine.isInState<StateC>(), true);
@@ -118,6 +123,7 @@ namespace hcFSM
         >;
 
         auto stateMachine = StateMachine<transitions_table> {};
+        
         auto handleEventResult = stateMachine.handleEvent<EventA>();
         
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);

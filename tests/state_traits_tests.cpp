@@ -34,6 +34,7 @@ namespace hcFSM
 
         void onExit(const EventA& eventA) {};
     };
+    
 
     TEST(StateTraitsTests, HasOnEntryNoEventArg) {
         EXPECT_EQ(hcFSM::has_onEntryNoEventArg<StateA>::value, false);
@@ -49,7 +50,7 @@ namespace hcFSM
         EXPECT_EQ(hcFSM::has_onEntryNoEventArg_v<StateE>, false);
     }
 
-    TEST(StateTraitsTests, HasOnEntryEvent) {
+    TEST(StateTraitsTests, HasOnEntryEventArg) {
         auto hasEntryStateA = hcFSM::has_onEntry<StateA, EventA>::value;
         auto hasEntryStateA_v = hcFSM::has_onEntry_v<StateA, EventA>;
         EXPECT_EQ(hasEntryStateA, false);
