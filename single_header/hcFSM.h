@@ -2,16 +2,16 @@
  * @author: Adamski Maciej (madamskip1)
  * @project: hcFSM
  * @project_url: https://github.com/madamskip1/hc-FSM
- * @date: 2024-02-20
+ * @date: 2024-06-30
  * @license: MIT License. Keep metadata_header intact. 
  * @version: 0.5.6
  */
 
 #pragma once
 
-#include <type_traits>
 #include <tuple>
 #include <variant>
+#include <type_traits>
 
 namespace hcFSM
 {
@@ -24,18 +24,20 @@ namespace hcFSM
     {
         PROCESSED,
         PROCESSED_SAME_STATE, // Event processed, but there is no need to change state, for e.g. StateA (EventA) -> StateA
-        PROCESSED_INNER_STATE_MACHINE,
         NO_VALID_TRANSITION,
+        GUARD_FAILED,
+
+        // INTERNAL USED
         EXIT_INNER_STATE_MACHINE,
         EXIT_AUTOMATIC_INNER_STATE_MACHINE,
-        GUARD_FAILED
     };
 
     constexpr bool isEventResultOk(HandleEventResult result)
     {
         return result == HandleEventResult::PROCESSED ||
             result == HandleEventResult::PROCESSED_SAME_STATE ||
-            result == HandleEventResult::PROCESSED_INNER_STATE_MACHINE;
+            result == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE ||
+            result == HandleEventResult::EXIT_INNER_STATE_MACHINE;
     }
 }
 
@@ -124,19 +126,6 @@ namespace hcFSM
 
 	// ~Specialized Transition types
 
-	// isValidTransition
-	
-	template <typename Transition>
-	struct isValidTransition : std::false_type {};
-
-	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Action, typename Guard>
-	struct isValidTransition<Transition<BeforeStateType, EventTriggerType, NextStateType, Action, Guard>> : std::true_type {};
-
-	template <typename Transition>
-	static constexpr bool isValidTransition_v = isValidTransition<Transition>::value;
-
-	// ~isValidTransition
-
 	// getBeforeState, getNextState, getEvent, getAction, getGuard
 
 	template <typename TransitionType>
@@ -201,6 +190,30 @@ namespace hcFSM
 	static constexpr bool hasGuard_v = hasGuard<TransitionType>::value;
 
 	// ~hasAction, hasGuard
+
+
+	// isValidTransition
+	
+	template <typename Transition>
+	struct isValidTransition : std::false_type {};
+
+	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Action, typename Guard>
+	struct isValidTransition<Transition<BeforeStateType, EventTriggerType, NextStateType, Action, Guard>> : std::true_type {};
+
+	template <typename Transition>
+	static constexpr bool isValidTransition_v = isValidTransition<Transition>::value;
+
+	// ~isValidTransition
+
+	// isAutomaticTransition
+
+	template <typename Transition>
+	struct isAutomaticTransition : std::is_same<getEvent_t<Transition>, AUTOMATIC_TRANSITION> {};
+
+	template <typename Transition>
+	static constexpr bool isAutomaticTransition_v = isAutomaticTransition<Transition>::value;
+
+	// ~isAutomaticTransition
 }
 namespace hcFSM
 {
@@ -533,24 +546,33 @@ namespace hcFSM
 			const auto lambda = [this, &event](auto& currentState) -> HandleEventResult
 				{
 					using CurrentStateType = std::decay_t<decltype(currentState)>;
-
+					
+					
 					if constexpr (isStateMachine_v<CurrentStateType>)
 					{
 						const auto innerTransitResult = innerStateMachineTransition(currentState, event);
 
-						if (innerTransitResult == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE)
+						if (innerTransitResult == HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE ||
+							innerTransitResult == HandleEventResult::EXIT_INNER_STATE_MACHINE)
 						{
-							return normalTransition(currentState, AUTOMATIC_TRANSITION{});
-						}
-						else if (innerTransitResult != HandleEventResult::EXIT_INNER_STATE_MACHINE)
-						{
-							return innerTransitResult;
+							if (innerTransitResult == HandleEventResult::EXIT_INNER_STATE_MACHINE)
+							{
+								if (const auto exitInnerStateMachineResult = normalTransition(currentState, event);
+									isEventResultOk(exitInnerStateMachineResult))
+								{
+									return exitInnerStateMachineResult;
+								}
+							}
+
+							return tryAutomaticTransition(currentState);
 						}
 
-						// if current state in inner state machine is ExitState then we need to transit to next state, go on to normal transition
+						return innerTransitResult;
 					}
-					
-					return normalTransition(currentState, event);
+					else
+					{
+						return normalTransition(currentState, event);
+					}
 				};
 
 			return std::visit(lambda, statesVariant);
@@ -563,14 +585,24 @@ namespace hcFSM
 
 			if constexpr (isValidTransition_v<transition>)
 			{
-				using NextStateType = getNextState_t<transition>;
-				const auto transitResult = transit<transition>(currentState, event);
-
-				if constexpr (!isStateMachine_v<NextStateType> && hasAutomaticTransition_v<transitions_table, NextStateType>)
+				auto transitResult = transit<transition>(currentState, event);
+				
+				if (!isEventResultOk(transitResult))
 				{
-					return tryAutomaticTransition(std::get<NextStateType>(statesVariant));
+					return transitResult;
 				}
 
+				using NextStateType = getNextState_t<transition>;
+				if constexpr (!isStateMachine_v<NextStateType> && !std::is_same_v<NextStateType, ExitState>)
+				{
+					const auto automaticTransitionResult = tryAutomaticTransition(std::get<NextStateType>(statesVariant));
+					
+					if (isEventResultOk(automaticTransitionResult))
+					{
+						transitResult = automaticTransitionResult;
+					}
+				}
+				
 				return transitResult;
 			}
 			else
@@ -583,13 +615,6 @@ namespace hcFSM
 		constexpr HandleEventResult innerStateMachineTransition(InnerStateMachineType& innerStateMachine, const EventTriggerType& event) const
 		{
 			const auto innerTransitionResult = innerStateMachine.handleEvent(event);
-			if (innerTransitionResult == HandleEventResult::PROCESSED ||
-				innerTransitionResult == HandleEventResult::PROCESSED_SAME_STATE ||
-				innerTransitionResult == HandleEventResult::PROCESSED_INNER_STATE_MACHINE)
-			{
-				return HandleEventResult::PROCESSED_INNER_STATE_MACHINE;
-			}
-			
 			return innerTransitionResult;
 		}
 
@@ -600,23 +625,23 @@ namespace hcFSM
 			{
 				using transition = getTransition_t<transitions_table, CurrentStateType, AUTOMATIC_TRANSITION>;
 				using NextStateType = getNextState_t<transition>;
+				
+				auto transitResult = transit<transition>(currentState, AUTOMATIC_TRANSITION{});
 
-				if constexpr (std::is_same_v<NextStateType, ExitState>)
+				if (transitResult == HandleEventResult::EXIT_INNER_STATE_MACHINE)
 				{
-					tryCallOnExit(currentState, AUTOMATIC_TRANSITION{});
 					return HandleEventResult::EXIT_AUTOMATIC_INNER_STATE_MACHINE;
 				}
-				
-				const auto transitResult = transit<transition>(currentState, AUTOMATIC_TRANSITION{});
 
 				if (isEventResultOk(transitResult))
 				{
-					if (auto nextAutomaticTransitionsResult = tryAutomaticTransition(std::get<NextStateType>(statesVariant));
-							nextAutomaticTransitionsResult != HandleEventResult::NO_VALID_TRANSITION)
+					if (const auto nextAutomaticTransitionsResult = tryAutomaticTransition(std::get<NextStateType>(statesVariant));
+							isEventResultOk(nextAutomaticTransitionsResult))
 					{
-						return nextAutomaticTransitionsResult;
+						transitResult = nextAutomaticTransitionsResult;
 					}
 				}
+
 				return transitResult;
 			}
 			else
@@ -663,6 +688,8 @@ namespace hcFSM
 					return HandleEventResult::PROCESSED;
 				}
 			}
+
+			return HandleEventResult::NO_VALID_TRANSITION;
 		}
 
 
