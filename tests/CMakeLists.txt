@@ -19,26 +19,6 @@ macro(add_unit_test testname)
     )
 endmacro(add_unit_test)
 
-macro(add_integration_test testname)
-    add_executable(
-        integration_${testname}
-        integration_tests/${testname}.cpp
-    )
-    target_link_libraries(
-        integration_${testname}
-        PRIVATE
-        hcFSM::hcFSM
-        GTest::gtest_main
-    )
-    add_test(
-        NAME integration_${testname}
-        COMMAND integration_${testname}
-    )
-    gtest_discover_tests(
-        integration_${testname}
-        )
-endmacro(add_integration_test)
-
 include(FetchContent)
 include(GoogleTest)
 
@@ -67,7 +47,5 @@ add_unit_test(handle_event_result_tests)
 add_unit_test(transition_struct_tests)
 add_unit_test(transition_traits_tests)
 add_unit_test(transition_table_tests)
-
-
-add_integration_test(onEntry_onExit_actions_tests)
-add_integration_test(simple_transition_tests)
+add_unit_test(onEntry_onExit_actions_tests)
+add_unit_test(simple_transition_tests)
