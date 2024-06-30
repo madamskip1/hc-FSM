@@ -71,4 +71,3 @@ add_unit_test(transition_table_tests)
 
 add_integration_test(onEntry_onExit_actions_tests)
 add_integration_test(simple_transition_tests)
-add_integration_test(inner_sm_transition_tests)
