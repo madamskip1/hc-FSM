@@ -6,80 +6,131 @@
 
 namespace hcFSM
 {
-    struct StateA 
+    CREATE_TRANSITION_GUARD(TransitionGuardPass, sourceState, eventParam, 
     {
-        int value = 0;
-    };
-    struct StateB {};
+        return true;
+    });
+
+    CREATE_TRANSITION_GUARD(TransitionGuardFail, sourceState, eventParam, 
+    {
+        return false;
+    });
+
+    CREATE_TRANSITION_GUARD(TransitionGuardOnStateValue, sourceState, eventParam, 
+    {
+        return sourceState.value > 0 ? true : false;
+    });
+
     struct EventA {};
-    struct EventB {};
-
-    CREATE_TRANSITION_GUARD(CreateGuard_test_guard, currentState, event, 
-        { 
-            return true;
-        }
-    );
-    
-    CREATE_TRANSITION_GUARD(GuardWithState_test_guard, currentState, event,
-        {
-            return currentState.value == 1 ? true : false;
-        }
-    );
-
-
-
-    TEST(TransitionGuardTests, CreateGuard)
+    struct StateA {};
+    struct StateB {};
+    struct StateC
     {
-        StateA stateA;
-        EventA eventA;
-        EXPECT_EQ(CreateGuard_test_guard {} (stateA, eventA), true);
-    }
+        int value;
+    };
 
-    
 
-    TEST(TransitionGuardTests, GuardWithState)
+    TEST(GuardActionTests, hasGuard)
     {
-        StateA stateA;
-        EventA eventA;
-
-        EXPECT_EQ(GuardWithState_test_guard {} (stateA, eventA), false);
-
-        stateA.value = 1;
-        EXPECT_EQ(GuardWithState_test_guard {} (stateA, eventA), true);
-    }
-
-    TEST(TransitionGuardTests, transitionHasGuard_withGeneratedGuard)
-    {
-        using transition = Transition<StateA, EventA, StateB, void, CreateGuard_test_guard>;
+        using transition = Transition<StateA, EventA, StateB, void, TransitionGuardPass>;
         ASSERT_EQ(hasGuard_v<transition>, true);
     }
 
-    CREATE_TRANSITION_GUARD(FalseGuard_test_guard, currentState, event,
-        {
-            return false;
-        }
-    );
-
-    TEST(TransitionGuardTests, TransitionWithGuard)
+    TEST(GuardActionTests, shouldAllowTransition)
     {
-        using transition1 = Transition<StateA, EventA, StateB, void, FalseGuard_test_guard>;
-        using transition2 = Transition<StateA, EventB, StateB, void, CreateGuard_test_guard>;
-        using transitions_table = TransitionsTable<transition1, transition2>;
-        ASSERT_EQ(hasGuard_v<transition1>, true);
-        ASSERT_EQ(hasGuard_v<transition2>, true);
+        using transition1 = TransitionWithGuard<StateA, EventA, StateB, TransitionGuardPass>; // or Transition<StateA, EventA, StateB, void, TransitionGuardPass>
+        using transitions_table = TransitionsTable<
+            transition1
+        >;
 
-        auto stateMachine = StateMachine<transitions_table>{};
+        auto stateMachine = StateMachine<transitions_table> {};
+
+        stateMachine.handleEvent<EventA>();
+
+        EXPECT_EQ(stateMachine.isInState<StateB>(), true);
+    }
+
+    TEST(GuardActionTests, shouldNotAllowTransition)
+    {
+        using transition1 = TransitionWithGuard<StateA, EventA, StateB, TransitionGuardFail>; // or Transition<StateA, EventA, StateB, void, TransitionGuardFail>
+        using transitions_table = TransitionsTable<
+            transition1
+        >;
+
+        auto stateMachine = StateMachine<transitions_table> {};
+
+        auto handleEventResult = stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
+        EXPECT_EQ(handleEventResult, HandleEventResult::GUARD_FAILED);
+    }
 
-        auto handleEventResult1 = stateMachine.handleEvent(EventA{});
+    TEST(GuardActionTests, shouldAllowTransitionDependingOnStateValue)
+    {
+        using transition1 = TransitionWithGuard<StateC, EventA, StateB, TransitionGuardOnStateValue>; // or Transition<StateC, EventA, StateB, void, TransitionGuardOnStateValue>
+        using transitions_table = TransitionsTable<
+            transition1
+        >;
 
-        EXPECT_EQ(stateMachine.isInState<StateA>(), true);
-        EXPECT_EQ(handleEventResult1, HandleEventResult::GUARD_FAILED);
+        auto stateMachine = StateMachine<transitions_table> {};
+        stateMachine.getState<StateC>().value = 1;
 
-        auto handleEventResult2 = stateMachine.handleEvent(EventB{});
+        auto handleEventResult = stateMachine.handleEvent<EventA>();
+
+        EXPECT_EQ(stateMachine.isInState<StateB>(), true);
+    }
+
+    TEST(GuardActionTests, shouldNotAllowTransitionDependingOnStateValue)
+    {
+        using transition1 = TransitionWithGuard<StateC, EventA, StateB, TransitionGuardOnStateValue>; // or Transition<StateC, EventA, StateB, void, TransitionGuardOnStateValue>
+        using transitions_table = TransitionsTable<
+            transition1
+        >;
+
+        auto stateMachine = StateMachine<transitions_table> {};
+        stateMachine.getState<StateC>().value = 0;
+
+        auto handleEventResult = stateMachine.handleEvent<EventA>();
+
+        EXPECT_EQ(stateMachine.isInState<StateC>(), true);
+        EXPECT_EQ(handleEventResult, HandleEventResult::GUARD_FAILED);
+    }
+    
+    TEST(GuardActionTests, shouldAllowAutomaticTransition)
+    {
+        using transition1 = Transition<StateA, EventA, StateB>;
+        using transition2 = TransitionAutomaticWithGuard<StateB, StateC, TransitionGuardPass>;
+        // or transition2 = TransitionWithGuard<StateA, AUTOMATIC_TRANSITION, StateB, TransitionGuardPass>
+        // or transition2 = Transition<StateA, AUTOMATIC_TRANSITION, StateB, void, TransitionGuardPass>
+        
+        using transitions_table = TransitionsTable<
+            transition1,
+            transition2
+        >;
+
+        auto stateMachine = StateMachine<transitions_table> {};
+
+        stateMachine.handleEvent<EventA>();
+        
+        EXPECT_EQ(stateMachine.isInState<StateC>(), true);
+    }
+
+    TEST(GuardActionTests, shouldNotAllowAutomaticTransition)
+    {
+        using transition1 = Transition<StateA, EventA, StateB>;
+        using transition2 = TransitionAutomaticWithGuard<StateB, StateA, TransitionGuardFail>;
+        // or transition2 = TransitionWithGuard<StateA, AUTOMATIC_TRANSITION, StateB, TransitionGuardFail>
+        // or transition2 = Transition<StateA, AUTOMATIC_TRANSITION, StateB, void, TransitionGuardFail>
+        
+        using transitions_table = TransitionsTable<
+            transition1,
+            transition2
+        >;
+
+        auto stateMachine = StateMachine<transitions_table> {};
+        
+        auto handleEventResult = stateMachine.handleEvent<EventA>();
         
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
-        EXPECT_EQ(handleEventResult2, HandleEventResult::PROCESSED);
     }
 }
