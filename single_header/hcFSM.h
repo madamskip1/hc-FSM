@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include <tuple>
-#include <variant>
 #include <type_traits>
+#include <variant>
+#include <tuple>
 
 namespace hcFSM
 {
