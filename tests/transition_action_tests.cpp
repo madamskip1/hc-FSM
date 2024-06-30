@@ -1,86 +1,105 @@
 #include <gtest/gtest.h>
 #include "hcFSM/detail/transition-action.h"
+#include "hcFSM/detail/transition-guard.h"
 #include "hcFSM/detail/transition.h"
 #include "hcFSM/detail/transitions-table.h"
 #include "hcFSM/detail/state-machine.h"
 
 namespace hcFSM
 {
-    struct StateA 
-    {
-        int value = 0;
+    constexpr int INITIAL_VALUE = 0;
+    constexpr int SOURCE_STATE_VALUE = 1;
+    constexpr int TARGET_STATE_VALUE = 2;
 
-        void setValue(int v)
-        {
-            value = v;
-        }
+    CREATE_TRANSITION_ACTION(transitionFunction, sourceState, event, targetState, 
+    {
+        sourceState.value = SOURCE_STATE_VALUE;
+        targetState.value = TARGET_STATE_VALUE;
+    });
+
+    CREATE_TRANSITION_GUARD(guardFunctionFail, sourceState, event, 
+    {
+        return false;
+    });
+
+    struct StateA
+    {
+        static int value;
     };
-    struct StateB 
+    int StateA::value = INITIAL_VALUE;
+    
+    struct StateB
     {
-        int value = 0;
-    };
-    struct EventA 
-    {
-        int value = 3;
+        int value = INITIAL_VALUE;
     };
 
-    CREATE_TRANSITION_ACTION(CreateAction_test_action, currentState, event, nextState, 
-        { 
-            currentState = 1;
-            event = 2; 
-            nextState = 3; 
-        }
-    );
+    struct StateC {};
 
-    CREATE_TRANSITION_ACTION(ActionWithStates_test_action, currentState, event, nextState,
-        {
-            currentState.setValue(1);
-            nextState.value = event.value;
-        }
-    );
+    struct EventA {};
+    
 
-
-
-    TEST(TransitionActionTests, CreateAction)
+    TEST(TransitionActionTests, hasAction)
     {
-        int currentState = 0;
-        int event = 0;
-        int nextState = 0;
-        CreateAction_test_action {} (currentState, event, nextState);
-        EXPECT_EQ(currentState, 1);
-        EXPECT_EQ(event, 2);
-        EXPECT_EQ(nextState, 3);
+        using transition = Transition<StateA, EventA, StateB, transitionFunction>;
+        EXPECT_TRUE(hasAction_v<transition>);
     }
 
-    TEST(TransitionActionTests, ActionWithStates)
+    TEST(TransitionActionTests, shouldCallTransitionAction)
     {
-        StateA stateA;
-        EventA eventA { 10 };
-        StateB stateB;
+        StateA::value = INITIAL_VALUE;
 
-        ActionWithStates_test_action {} (stateA, eventA, stateB);
-        EXPECT_EQ(stateA.value, 1);
-        EXPECT_EQ(stateB.value, 10);
+        using transition = Transition<StateA, EventA, StateB, transitionFunction>;
+        using transitions_table = TransitionsTable<transition>;
+
+        auto stateMachine = StateMachine<transitions_table> {};
+        stateMachine.handleEvent<EventA>();
+
+        EXPECT_EQ(StateA::value, SOURCE_STATE_VALUE);
+        EXPECT_EQ(stateMachine.getState<StateB>().value, TARGET_STATE_VALUE);
     }
 
-    TEST(TransitionActionTest, hasAction_withGeneratedAction)
+    TEST(TransitionActionTests, shouldCallTransitionActionIfNextStateIsSameAsCurrent)
     {
-        using transition = Transition<StateA, EventA, StateB, CreateAction_test_action>;
-        ASSERT_EQ(isValidTransition_v<transition>, true);
-        ASSERT_EQ(hasAction_v<transition>, true);
+        StateA::value = INITIAL_VALUE;
+
+        using transition = Transition<StateA, EventA, StateA, transitionFunction>;
+        using transitions_table = TransitionsTable<transition>;
+
+        auto stateMachine = StateMachine<transitions_table> {};
+        stateMachine.handleEvent<EventA>();
+
+        // first set StateA::value = SOURCE_STATE_VALUE as sourceState, then StateA::value = TARGET_STATE_VALUE as targetState
+        EXPECT_EQ(stateMachine.getState<StateA>().value, TARGET_STATE_VALUE);
     }
 
-    TEST(TransitionActionTest, TransitionWithAction)
+    TEST(TransitionActionTess, shouldCallTransitionActionDuringAutomaticTransition)
     {
-        using transition = Transition<StateA, EventA, StateB, ActionWithStates_test_action>;
-        ASSERT_EQ(isValidTransition_v<transition>, true);
-        ASSERT_EQ(hasAction_v<transition>, true);
-
-        auto stateMachine = StateMachine<TransitionsTable<transition>>{};
-
-        stateMachine.handleEvent(EventA{});
+        StateA::value = INITIAL_VALUE;
         
-        ASSERT_EQ(stateMachine.isInState<StateB>(), true);
-        EXPECT_EQ(stateMachine.getState<StateB>().value, 3);
+        using transition1 = Transition<StateC, EventA, StateA>;
+        using transition2 = Transition<StateA, AUTOMATIC_TRANSITION, StateB, transitionFunction>;
+        using transitions_table = TransitionsTable<
+            transition1, 
+            transition2
+        >;
+
+        auto stateMachine = StateMachine<transitions_table> {};
+        stateMachine.handleEvent<EventA>();
+
+        EXPECT_EQ(StateA::value, SOURCE_STATE_VALUE);
+        EXPECT_EQ(stateMachine.getState<StateB>().value, TARGET_STATE_VALUE);
+    }
+
+    TEST(TransitionActionTests, shouldNotCallTransitionActionIfGuardFail)
+    {
+        StateA::value = INITIAL_VALUE;
+
+        using transition = Transition<StateA, EventA, StateB, transitionFunction, guardFunctionFail>;
+        using transitions_table = TransitionsTable<transition>;
+
+        auto stateMachine = StateMachine<transitions_table> {};
+        stateMachine.handleEvent<EventA>();
+    
+        EXPECT_EQ(StateA::value, INITIAL_VALUE);
     }
 }
