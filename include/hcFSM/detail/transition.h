@@ -37,19 +37,6 @@ namespace hcFSM
 
 	// ~Specialized Transition types
 
-	// isValidTransition
-	
-	template <typename Transition>
-	struct isValidTransition : std::false_type {};
-
-	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Action, typename Guard>
-	struct isValidTransition<Transition<BeforeStateType, EventTriggerType, NextStateType, Action, Guard>> : std::true_type {};
-
-	template <typename Transition>
-	static constexpr bool isValidTransition_v = isValidTransition<Transition>::value;
-
-	// ~isValidTransition
-
 	// getBeforeState, getNextState, getEvent, getAction, getGuard
 
 	template <typename TransitionType>
@@ -114,4 +101,28 @@ namespace hcFSM
 	static constexpr bool hasGuard_v = hasGuard<TransitionType>::value;
 
 	// ~hasAction, hasGuard
+
+
+	// isValidTransition
+	
+	template <typename Transition>
+	struct isValidTransition : std::false_type {};
+
+	template <typename BeforeStateType, typename EventTriggerType, typename NextStateType, typename Action, typename Guard>
+	struct isValidTransition<Transition<BeforeStateType, EventTriggerType, NextStateType, Action, Guard>> : std::true_type {};
+
+	template <typename Transition>
+	static constexpr bool isValidTransition_v = isValidTransition<Transition>::value;
+
+	// ~isValidTransition
+
+	// isAutomaticTransition
+
+	template <typename Transition>
+	struct isAutomaticTransition : std::is_same<getEvent_t<Transition>, AUTOMATIC_TRANSITION> {};
+
+	template <typename Transition>
+	static constexpr bool isAutomaticTransition_v = isAutomaticTransition<Transition>::value;
+
+	// ~isAutomaticTransition
 }

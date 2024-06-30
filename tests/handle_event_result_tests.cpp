@@ -5,7 +5,7 @@
 #include "hcFSM/detail/transition-guard.h"
 
 
-namespace hcFSM
+namespace
 {
     struct StateA {};
     struct StateB {};

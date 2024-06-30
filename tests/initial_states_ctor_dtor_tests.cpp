@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "hcFSM/detail/state-machine.h"
 
-namespace hcFSM
+namespace
 {
     struct EventA {};
 
@@ -146,11 +146,13 @@ namespace hcFSM
     {
         resetCounters<MyClass1>();
         resetCounters<MyClass2>();
-        using transition1 = Transition<MyClass1, EventA, MyClass2>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<MyClass1, EventA, MyClass2>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1
         >;
-        auto stateMachine = StateMachine<transitions_table>{};
+        
+        auto stateMachine = hcFSM::StateMachine<transitions_table>{};
+
         EXPECT_EQ(MyClass1::defaultConstructorCalls, 1);
         EXPECT_EQ(MyClass1::parameterizedConstructorCalls, 0);
         EXPECT_EQ(MyClass1::copyConstructorCalls, 0);
@@ -172,11 +174,13 @@ namespace hcFSM
     {
         resetCounters<MyClass1>();
         resetCounters<MyClass2>();
-        using transition1 = Transition<MyClass1, EventA, MyClass2>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<MyClass1, EventA, MyClass2>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1
         >;
-        auto stateMachine = StateMachine<transitions_table, MyClass2>{};
+
+        auto stateMachine = hcFSM::StateMachine<transitions_table, MyClass2>{};
+
         EXPECT_EQ(MyClass1::defaultConstructorCalls, 0);
         EXPECT_EQ(MyClass1::parameterizedConstructorCalls, 0);
         EXPECT_EQ(MyClass1::copyConstructorCalls, 0);

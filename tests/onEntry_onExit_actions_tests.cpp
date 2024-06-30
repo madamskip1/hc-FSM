@@ -3,7 +3,7 @@
 #include "hcFSM/detail/transitions-table.h"
 #include "hcFSM/detail/state-machine.h"
 
-namespace hcFSM
+namespace
 {
         
     struct EventA {};
@@ -29,9 +29,9 @@ namespace hcFSM
 
     #define onEntryEventMethod() void onEntry(const EventB&) { value = ACTIONS_VALUE::OnEntryEventParameter;  }
 
-    #define onExitAutomaticTransitionEventMethod() void onExit(const AUTOMATIC_TRANSITION&) { value = ACTIONS_VALUE::OnExitAutomaticTransitionEventParameter;  }
+    #define onExitAutomaticTransitionEventMethod() void onExit(const hcFSM::AUTOMATIC_TRANSITION&) { value = ACTIONS_VALUE::OnExitAutomaticTransitionEventParameter;  }
 
-    #define onEntryAutomaticTransitionEventMethod() void onEntry(const AUTOMATIC_TRANSITION&) { value = ACTIONS_VALUE::OnEntryAutomaticTransitionEventParameter;  }
+    #define onEntryAutomaticTransitionEventMethod() void onEntry(const hcFSM::AUTOMATIC_TRANSITION&) { value = ACTIONS_VALUE::OnEntryAutomaticTransitionEventParameter;  }
     
 
     struct StateA 
@@ -87,13 +87,13 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldCallOnExitWithoutEventParameter)
     {
-        using transition1 = Transition<StateA, EventA, StateNoActions>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateA, EventA, StateNoActions>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1
         >;
         StateA::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnExitNoEventParameter);
@@ -101,13 +101,13 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldCallOnExitWithEventParameter)
     {
-        using transition1 = Transition<StateA, EventB, StateNoActions>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateA, EventB, StateNoActions>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1
         >;
         StateA::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventB>();
 
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnExitEventParameter);
@@ -115,12 +115,12 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldCallOnEntryWithoutEventParameter)
     {
-        using transition1 = Transition<StateNoActions, EventA, StateB>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateNoActions, EventA, StateB>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1
         >;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
         
         ASSERT_EQ(stateMachine.isInState<StateB>(), true);
@@ -129,12 +129,12 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldCallOnEntryWithEventParameter)
     {
-        using transition1 = Transition<StateNoActions, EventB, StateB>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateNoActions, EventB, StateB>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1
         >;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventB>();
 
         ASSERT_EQ(stateMachine.isInState<StateB>(), true);
@@ -143,13 +143,13 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldCallOnEntryAndOnExitWithoutEventParameter)
     {
-        using transition1 = Transition<StateA, EventA, StateB>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateA, EventA, StateB>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1
         >;
         StateA::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnExitNoEventParameter);
@@ -159,13 +159,13 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldCallOnEntryAndOnExitWithEventParameter)
     {
-        using transition1 = Transition<StateA, EventB, StateB>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateA, EventB, StateB>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1
         >;
         StateA::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventB>();
 
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnExitEventParameter);
@@ -175,13 +175,13 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldNotCallOnEntryAndOnExitIfNextStateIsSameAsCurrent)
     {
-        using transition1 = Transition<StateA, EventA, StateA>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateA, EventA, StateA>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1
         >;
         StateA::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::NoValue);
@@ -189,15 +189,15 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldCallOnEntryAndOnExitDuringAutomaticTransitionWithoutEventParameter)
     {
-        using transition1 = Transition<StateB, EventA, StateA>;
-        using transition2 = TransitionAutomatic<StateA, StateB>; // or Transition<StateB, AUTOMATIC_TRANSITION, StateC>
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateB, EventA, StateA>;
+        using transition2 = hcFSM::TransitionAutomatic<StateA, StateB>; // or Transition<StateB, AUTOMATIC_TRANSITION, StateC>
+        using transitions_table = hcFSM::TransitionsTable<
             transition1,
             transition2
         >;
         StateA::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
 
         ASSERT_EQ(stateMachine.isInState<StateB>(), true);
@@ -207,15 +207,15 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldCallOnEntryAndOnExitDuringAutomaticTransitionWithEventParameter)
     {
-        using transition1 = Transition<StateA, EventA, StateC>;
-        using transition2 = TransitionAutomatic<StateC, StateD>; // or Transition<StateB, AUTOMATIC_TRANSITION, StateC>
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateA, EventA, StateC>;
+        using transition2 = hcFSM::TransitionAutomatic<StateC, StateD>; // or Transition<StateB, AUTOMATIC_TRANSITION, StateC>
+        using transitions_table = hcFSM::TransitionsTable<
             transition1,
             transition2
         >;
         StateC::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
 
         ASSERT_EQ(stateMachine.isInState<StateD>(), true);
@@ -225,15 +225,15 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldCallOnEntryAndOnExitInInnerStateMachineTransition)
     {
-        using innerTransition = Transition<StateA, EventA, StateB>;
-        using innerTransitionsTable = TransitionsTable<innerTransition>;
-        using innerStateMachine = StateMachine<innerTransitionsTable>;
+        using innerTransition = hcFSM::Transition<StateA, EventA, StateB>;
+        using innerTransitionsTable = hcFSM::TransitionsTable<innerTransition>;
+        using innerStateMachine = hcFSM::StateMachine<innerTransitionsTable>;
 
-        using transition = Transition<innerStateMachine, EventB, StateA>; // innerStateMachine is initial state
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<innerStateMachine, EventB, StateA>; // innerStateMachine is initial state
+        using transitions_table = hcFSM::TransitionsTable<transition>;
         StateA::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table> {}; // is in innerStateMachine right now
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {}; // is in innerStateMachine right now
         stateMachine.handleEvent<EventA>();
 
         const auto isInInnerStateB = stateMachine.isInState<innerStateMachine, StateB>();
@@ -245,11 +245,11 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldCallOnEntryOnInitializationOfInitialState)
     {
-        using transition = Transition<StateA, EventA, StateA>;
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<StateA, EventA, StateA>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
         StateA::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table, StateA, true> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table, StateA, true> {};
 
         ASSERT_EQ(stateMachine.isInState<StateA>(), true);
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::OnEntryNoEventParameter);
@@ -257,11 +257,11 @@ namespace hcFSM
 
     TEST(OnExitonEntryActionsTests, shouldNotCallOnEntryOnInitializationOfInitialState)
     {
-        using transition = Transition<StateA, EventA, StateA>;
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<StateA, EventA, StateA>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
         StateA::value = ACTIONS_VALUE::NoValue;
 
-        auto stateMachine = StateMachine<transitions_table, StateA, false> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table, StateA, false> {};
 
         ASSERT_EQ(stateMachine.isInState<StateA>(), true);
         EXPECT_EQ(StateA::value, ACTIONS_VALUE::NoValue);
