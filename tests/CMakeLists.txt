@@ -1,24 +1,5 @@
 SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-macro(add_unit_test testname)
-    add_executable(
-        unit_${testname}
-        ${testname}.cpp
-    )
-    target_link_libraries(
-        unit_${testname}
-        PRIVATE
-        hcFSM::hcFSM
-        GTest::gtest_main)
-    add_test(
-        NAME unit_${testname}
-        COMMAND unit_${testname}
-    )
-    gtest_discover_tests(
-        unit_${testname}
-    )
-endmacro(add_unit_test)
-
 include(FetchContent)
 include(GoogleTest)
 
@@ -30,22 +11,38 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-# Add gtest include directory and link against gtest library
-include_directories(${googletest_SOURCE_DIR}/include)
-link_directories(${googletest_BINARY_DIR})
 
+add_executable(hcFSM_tests)
 
-add_unit_test(state_traits_tests)
-add_unit_test(state_machine_tests)
-add_unit_test(state_machine_traits_tests)
-add_unit_test(hierarchical_state_machine_tests)
-add_unit_test(automatic_transition_tests)
-add_unit_test(initial_states_ctor_dtor_tests)
-add_unit_test(transition_action_tests)
-add_unit_test(transition_guard_tests)
-add_unit_test(handle_event_result_tests)
-add_unit_test(transition_struct_tests)
-add_unit_test(transition_traits_tests)
-add_unit_test(transition_table_tests)
-add_unit_test(onEntry_onExit_actions_tests)
-add_unit_test(simple_transition_tests)
+target_sources(hcFSM_tests
+    PRIVATE
+        state_traits_tests.cpp
+        state_machine_tests.cpp
+        state_machine_traits_tests.cpp
+        hierarchical_state_machine_tests.cpp
+        automatic_transition_tests.cpp
+        initial_states_ctor_dtor_tests.cpp
+        transition_action_tests.cpp
+        transition_guard_tests.cpp
+        handle_event_result_tests.cpp
+        transition_struct_tests.cpp
+        transition_traits_tests.cpp
+        transition_table_tests.cpp
+        onEntry_onExit_actions_tests.cpp
+        simple_transition_tests.cpp
+)
+
+target_link_libraries(hcFSM_tests
+    PRIVATE
+        hcFSM::hcFSM
+        GTest::gtest_main
+)
+
+add_test(
+    NAME hcFSM_tests
+    COMMAND hcFSM_tests
+)
+
+gtest_discover_tests(
+    hcFSM_tests
+)
