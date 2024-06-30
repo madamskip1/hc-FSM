@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "hcFSM/detail/state.h"
 
-namespace hcFSM
+namespace
 {
     struct Event {};
     struct EventA : Event {};

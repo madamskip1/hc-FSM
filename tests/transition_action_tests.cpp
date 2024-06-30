@@ -5,7 +5,7 @@
 #include "hcFSM/detail/transitions-table.h"
 #include "hcFSM/detail/state-machine.h"
 
-namespace hcFSM
+namespace
 {
     constexpr int INITIAL_VALUE = 0;
     constexpr int SOURCE_STATE_VALUE = 1;
@@ -40,18 +40,18 @@ namespace hcFSM
 
     TEST(TransitionActionTests, hasAction)
     {
-        using transition = Transition<StateA, EventA, StateB, transitionFunction>;
-        EXPECT_TRUE(hasAction_v<transition>);
+        using transition = hcFSM::Transition<StateA, EventA, StateB, transitionFunction>;
+        EXPECT_TRUE(hcFSM::hasAction_v<transition>);
     }
 
     TEST(TransitionActionTests, shouldCallTransitionAction)
     {
         StateA::value = INITIAL_VALUE;
 
-        using transition = Transition<StateA, EventA, StateB, transitionFunction>;
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<StateA, EventA, StateB, transitionFunction>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(StateA::value, SOURCE_STATE_VALUE);
@@ -62,10 +62,10 @@ namespace hcFSM
     {
         StateA::value = INITIAL_VALUE;
 
-        using transition = Transition<StateA, EventA, StateA, transitionFunction>;
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<StateA, EventA, StateA, transitionFunction>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
 
         // first set StateA::value = SOURCE_STATE_VALUE as sourceState, then StateA::value = TARGET_STATE_VALUE as targetState
@@ -76,14 +76,14 @@ namespace hcFSM
     {
         StateA::value = INITIAL_VALUE;
         
-        using transition1 = Transition<StateC, EventA, StateA>;
-        using transition2 = Transition<StateA, AUTOMATIC_TRANSITION, StateB, transitionFunction>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateC, EventA, StateA>;
+        using transition2 = hcFSM::Transition<StateA, hcFSM::AUTOMATIC_TRANSITION, StateB, transitionFunction>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1, 
             transition2
         >;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
 
         EXPECT_EQ(StateA::value, SOURCE_STATE_VALUE);
@@ -94,10 +94,10 @@ namespace hcFSM
     {
         StateA::value = INITIAL_VALUE;
 
-        using transition = Transition<StateA, EventA, StateB, transitionFunction, guardFunctionFail>;
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<StateA, EventA, StateB, transitionFunction, guardFunctionFail>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
         stateMachine.handleEvent<EventA>();
     
         EXPECT_EQ(StateA::value, INITIAL_VALUE);

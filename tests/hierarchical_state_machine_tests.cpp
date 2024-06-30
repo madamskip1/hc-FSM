@@ -3,7 +3,7 @@
 #include "hcFSM/detail/transitions-table.h"
 #include "hcFSM/detail/state-machine.h"
 
-namespace hcFSM
+namespace
 {
     struct StateA {};
     struct StateB {};
@@ -14,16 +14,16 @@ namespace hcFSM
 
     TEST(HierarchicalStateMachineTests, shouldEnterInnerStateMachine)
     {
-        using innerTransition = Transition<StateB, EventA, StateA>;
-        using innerSM = StateMachine<TransitionsTable<innerTransition>>;
-        using transition = Transition<StateA, EventA, innerSM>;
-        using transitions_table = TransitionsTable<transition>;
+        using innerTransition = hcFSM::Transition<StateB, EventA, StateA>;
+        using innerSM = hcFSM::StateMachine<hcFSM::TransitionsTable<innerTransition>>;
+        using transition = hcFSM::Transition<StateA, EventA, innerSM>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
 
-        auto stateMachine = StateMachine<transitions_table> {};
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {};
 
         auto handleEventResult = stateMachine.handleEvent<EventA>();
         
-        EXPECT_EQ(handleEventResult, HandleEventResult::PROCESSED);
+        EXPECT_EQ(handleEventResult, hcFSM::HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<innerSM>(), true);
         auto isInInnerStateB = stateMachine.isInState<innerSM, StateB>();
         EXPECT_EQ(isInInnerStateB, true);
@@ -31,17 +31,17 @@ namespace hcFSM
 
     TEST(HierarchicalStateMachineTests, shouldTransitInInnerStateMachine)
     {
-        using innerTransition = Transition<StateA, EventB, StateB>;
-        using innerSM = StateMachine<TransitionsTable<innerTransition>>;
+        using innerTransition = hcFSM::Transition<StateA, EventB, StateB>;
+        using innerSM = hcFSM::StateMachine<hcFSM::TransitionsTable<innerTransition>>;
 
-        using transition = Transition<innerSM, EventA, StateC>;
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<innerSM, EventA, StateC>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
 
-        auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM::StateA
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {}; // initial state is innerSM::StateA
 
         auto handleEventResult = stateMachine.handleEvent<EventB>();
 
-        EXPECT_EQ(handleEventResult, HandleEventResult::PROCESSED);
+        EXPECT_EQ(handleEventResult, hcFSM::HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<innerSM>(), true);
         auto isInInnerStateB = stateMachine.isInState<innerSM, StateB>();
         EXPECT_EQ(isInInnerStateB, true);
@@ -49,17 +49,17 @@ namespace hcFSM
 
     TEST(HierarchicalStateMachineTests, shouldNotTransitInInnerStateMachine)
     {
-        using innerTransition = Transition<StateA, EventB, StateB>;
-        using innerSM = StateMachine<TransitionsTable<innerTransition>>;
+        using innerTransition = hcFSM::Transition<StateA, EventB, StateB>;
+        using innerSM = hcFSM::StateMachine<hcFSM::TransitionsTable<innerTransition>>;
 
-        using transition = Transition<innerSM, EventB, StateC>;
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<innerSM, EventB, StateC>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
 
-        auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM::StateA
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {}; // initial state is innerSM::StateA
 
         auto handleEventResult = stateMachine.handleEvent<EventA>();
 
-        EXPECT_EQ(handleEventResult, HandleEventResult::NO_VALID_TRANSITION);
+        EXPECT_EQ(handleEventResult, hcFSM::HandleEventResult::NO_VALID_TRANSITION);
         EXPECT_EQ(stateMachine.isInState<innerSM>(), true);
         auto isInInnerStateA = stateMachine.isInState<innerSM, StateA>();
         EXPECT_EQ(isInInnerStateA, true);
@@ -67,56 +67,56 @@ namespace hcFSM
 
     TEST(HierarchicalStateMachineTests, shouldExitInnerStateMachine)
     {
-        using innerTransition = Transition<StateA, EventA, ExitState>;
-        using innerSM = StateMachine<TransitionsTable<innerTransition>>;
+        using innerTransition = hcFSM::Transition<StateA, EventA, hcFSM::ExitState>;
+        using innerSM = hcFSM::StateMachine<hcFSM::TransitionsTable<innerTransition>>;
 
-        using transition = Transition<innerSM, EventA, StateB>;
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<innerSM, EventA, StateB>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
         
-        auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM::StateA
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {}; // initial state is innerSM::StateA
 
         auto handleResultEvent = stateMachine.handleEvent<EventA>();
 
-        EXPECT_EQ(handleResultEvent, HandleEventResult::PROCESSED);
+        EXPECT_EQ(handleResultEvent, hcFSM::HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
     }
 
     TEST(HierarchicalStateMachineTests, shouldChainExitInnerStateMachine)
     {
-        using innerTransition2 = Transition<StateA, EventA, ExitState>;
-        using innerSM2 = StateMachine<TransitionsTable<innerTransition2>>;
+        using innerTransition2 = hcFSM::Transition<StateA, EventA, hcFSM::ExitState>;
+        using innerSM2 = hcFSM::StateMachine<hcFSM::TransitionsTable<innerTransition2>>;
 
-        using innerTransition1 = Transition<innerSM2, EventA, ExitState>;
-        using innerSM1 = StateMachine<TransitionsTable<innerTransition1>>;
+        using innerTransition1 = hcFSM::Transition<innerSM2, EventA, hcFSM::ExitState>;
+        using innerSM1 = hcFSM::StateMachine<hcFSM::TransitionsTable<innerTransition1>>;
 
-        using transition = Transition<innerSM1, EventA, StateB>;
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<innerSM1, EventA, StateB>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
         
-        auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM1::innerSM2::StateA
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {}; // initial state is innerSM1::innerSM2::StateA
         
         auto handleResultEvent = stateMachine.handleEvent<EventA>();
 
-        EXPECT_EQ(handleResultEvent, HandleEventResult::PROCESSED);
+        EXPECT_EQ(handleResultEvent, hcFSM::HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<StateB>(), true);
     }
 
     TEST(HierarchicalStateMachineTests, shouldAutomaticalyTransitStateInInnerStateMachine)
     {
-        using innerTransition1 = Transition<StateA, EventA, StateB>;
-        using innerTransition2 = TransitionAutomatic<StateB, StateC>; // or Transition<StateB, AUTOMATIC_TRANSITION, StateC>
-        using innerSM = StateMachine<TransitionsTable<
+        using innerTransition1 = hcFSM::Transition<StateA, EventA, StateB>;
+        using innerTransition2 = hcFSM::TransitionAutomatic<StateB, StateC>; // or hcFSM::Transition<StateB, AUTOMATIC_TRANSITION, StateC>
+        using innerSM = hcFSM::StateMachine<hcFSM::TransitionsTable<
             innerTransition1,
             innerTransition2
         >>;
 
-        using transition = Transition<innerSM, EventA, StateA>;
-        using transitions_table = TransitionsTable<transition>;
+        using transition = hcFSM::Transition<innerSM, EventA, StateA>;
+        using transitions_table = hcFSM::TransitionsTable<transition>;
         
-        auto stateMachine = StateMachine<transitions_table> {}; // initial state is innerSM::StateA
+        auto stateMachine = hcFSM::StateMachine<transitions_table> {}; // initial state is innerSM::StateA
         
         auto handleResultEvent = stateMachine.handleEvent<EventA>();
         
-        EXPECT_EQ(handleResultEvent, HandleEventResult::PROCESSED);
+        EXPECT_EQ(handleResultEvent, hcFSM::HandleEventResult::PROCESSED);
         EXPECT_EQ(stateMachine.isInState<innerSM>(), true);
         auto isInInnerStateC = stateMachine.isInState<innerSM, StateC>();
         EXPECT_EQ(isInInnerStateC, true);   

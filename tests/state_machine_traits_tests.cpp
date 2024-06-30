@@ -7,13 +7,13 @@ struct StateA {};
 struct StateB {};
 struct EventA {};
 
-namespace hcFSM
+namespace
 {
     TEST(StateMachineTraitsTests, VariantFromTuple_simpleTuple)
     {
         using SimpleTuple = std::tuple<int, float, double>;
-        using SimpleVariant = typename variantTypeFromStatesTuple<SimpleTuple>::type;
-        using SimpleVariant_t = variantTypeFromStatesTuple_t<SimpleTuple>;
+        using SimpleVariant = typename hcFSM::variantTypeFromStatesTuple<SimpleTuple>::type;
+        using SimpleVariant_t = hcFSM::variantTypeFromStatesTuple_t<SimpleTuple>;
 
         auto is_same_simple = std::is_same_v<SimpleVariant, std::variant<std::monostate, int, float, double>>;
         auto is_same_simple_t = std::is_same_v<SimpleVariant_t, std::variant<std::monostate, int, float, double>>;
@@ -24,8 +24,8 @@ namespace hcFSM
     TEST(StateMachineTraitsTests, VariantFromTuple_emptyTuple)
     {
         using EmptyTuple = std::tuple<>;
-        using EmptyVariant = typename variantTypeFromStatesTuple<EmptyTuple>::type;
-        using EmptyVariant_t = variantTypeFromStatesTuple_t<EmptyTuple>;
+        using EmptyVariant = typename hcFSM::variantTypeFromStatesTuple<EmptyTuple>::type;
+        using EmptyVariant_t = hcFSM::variantTypeFromStatesTuple_t<EmptyTuple>;
 
         auto is_same_empty = std::is_same_v<EmptyVariant, std::variant<>>;
         auto is_same_empty_t = std::is_same_v<EmptyVariant_t, std::variant<>>;
@@ -36,8 +36,8 @@ namespace hcFSM
     TEST(StateMachineTraitsTests, VariantFromTuple_statesTuple)
     {
         using StatesTuple = std::tuple<StateA, StateB>;
-        using StatesVariant = typename variantTypeFromStatesTuple<StatesTuple>::type;
-        using StatesVariant_t = variantTypeFromStatesTuple_t<StatesTuple>;
+        using StatesVariant = typename hcFSM::variantTypeFromStatesTuple<StatesTuple>::type;
+        using StatesVariant_t = hcFSM::variantTypeFromStatesTuple_t<StatesTuple>;
 
         auto is_same_states = std::is_same_v<StatesVariant, std::variant<std::monostate, StateA, StateB>>;
         auto is_same_states_t = std::is_same_v<StatesVariant_t, std::variant<std::monostate, StateA, StateB>>;
@@ -49,10 +49,10 @@ namespace hcFSM
     {
         using SimpleTuple = std::tuple<int, float, double>;
 
-        auto isInSimple = isTypeInTuple_v<int, SimpleTuple>;
+        auto isInSimple = hcFSM::isTypeInTuple_v<int, SimpleTuple>;
         EXPECT_EQ(isInSimple, true);
         
-        auto isNotInSimple = isTypeInTuple_v<char, SimpleTuple>;
+        auto isNotInSimple = hcFSM::isTypeInTuple_v<char, SimpleTuple>;
         EXPECT_EQ(isNotInSimple, false);
     }
 
@@ -60,7 +60,7 @@ namespace hcFSM
     {
         using EmptyTuple = std::tuple<>;
 
-        auto isInEmpty = isTypeInTuple_v<int, EmptyTuple>;
+        auto isInEmpty = hcFSM::isTypeInTuple_v<int, EmptyTuple>;
         EXPECT_EQ(isInEmpty, false);
     }
 
@@ -71,16 +71,16 @@ namespace hcFSM
         >;
         using StateMachine = hcFSM::StateMachine<transitions_table>;
 
-        EXPECT_EQ(isStateMachine<StateMachine>::value, true);
-        EXPECT_EQ(isStateMachine_v<StateMachine>, true);
+        EXPECT_EQ(hcFSM::isStateMachine<StateMachine>::value, true);
+        EXPECT_EQ(hcFSM::isStateMachine_v<StateMachine>, true);
     }
     
     TEST(StateMachineTraitsTests, isStateMachine_Invalid)
     {
-        EXPECT_EQ(isStateMachine<void>::value, false);
-        EXPECT_EQ(isStateMachine_v<void>, false);
+        EXPECT_EQ(hcFSM::isStateMachine<void>::value, false);
+        EXPECT_EQ(hcFSM::isStateMachine_v<void>, false);
 
-        EXPECT_EQ(isStateMachine<StateA>::value, false);
-        EXPECT_EQ(isStateMachine_v<StateA>, false);
+        EXPECT_EQ(hcFSM::isStateMachine<StateA>::value, false);
+        EXPECT_EQ(hcFSM::isStateMachine_v<StateA>, false);
     }
 }

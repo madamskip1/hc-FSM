@@ -3,8 +3,7 @@
 #include "hcFSM/detail/transitions-table.h"
 #include "hcFSM/detail/state-machine.h"
 
-namespace hcFSM
-{
+namespace {
     struct StateA {};
     struct StateB {};
     struct StateC {};
@@ -15,33 +14,33 @@ namespace hcFSM
 
     TEST(AutomaticTransitionTests, NextState_AutomaticTransition)
     {
-        using transition1 = Transition<StateA, EventB, StateB>;
-        using transition2 = Transition<StateB, AUTOMATIC_TRANSITION, StateC>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateA, EventB, StateB>;
+        using transition2 = hcFSM::Transition<StateB, hcFSM::AUTOMATIC_TRANSITION, StateC>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1,
             transition2
         >;
-        auto hasAutomaticTransitionFromStateA = hasAutomaticTransition<transitions_table, StateA>::value;
-        auto hasAutomaticTransitionFromStateA_v = hasAutomaticTransition_v<transitions_table, StateA>;
+        auto hasAutomaticTransitionFromStateA = hcFSM::hasAutomaticTransition<transitions_table, StateA>::value;
+        auto hasAutomaticTransitionFromStateA_v = hcFSM::hasAutomaticTransition_v<transitions_table, StateA>;
         EXPECT_EQ(hasAutomaticTransitionFromStateA, false);
         EXPECT_EQ(hasAutomaticTransitionFromStateA_v, false);
 
-        auto hasAutomaticTransitionFromStateB = hasAutomaticTransition<transitions_table, StateB>::value;
-        auto hasAutomaticTransitionFromStateB_v = hasAutomaticTransition_v<transitions_table, StateB>;
+        auto hasAutomaticTransitionFromStateB = hcFSM::hasAutomaticTransition<transitions_table, StateB>::value;
+        auto hasAutomaticTransitionFromStateB_v = hcFSM::hasAutomaticTransition_v<transitions_table, StateB>;
         EXPECT_EQ(hasAutomaticTransitionFromStateB, true);
         EXPECT_EQ(hasAutomaticTransitionFromStateB_v, true);
     }
 
     TEST(AutomaticTransitionTests, SimpleAutomaticTransition)
     {
-        using transition1 = Transition<StateA, EventA, StateB>;
-        using transition2 = Transition<StateB, AUTOMATIC_TRANSITION, StateC>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateA, EventA, StateB>;
+        using transition2 = hcFSM::Transition<StateB, hcFSM::AUTOMATIC_TRANSITION, StateC>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1,
             transition2
         >;   
 
-        auto stateMachine = StateMachine<transitions_table, StateA>{};
+        auto stateMachine = hcFSM::StateMachine<transitions_table, StateA>{};
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
         
         stateMachine.handleEvent(EventA{});
@@ -51,16 +50,16 @@ namespace hcFSM
 
     TEST(AutomaticTransitionTests, FewAutomaticTransitionsInARow)
     {
-        using transition1 = Transition<StateA, EventA, StateB>;
-        using transition2 = Transition<StateB, AUTOMATIC_TRANSITION, StateC>;
-        using transition3 = Transition<StateC, AUTOMATIC_TRANSITION, StateD>;
-        using transitions_table = TransitionsTable<
+        using transition1 = hcFSM::Transition<StateA, EventA, StateB>;
+        using transition2 = hcFSM::Transition<StateB, hcFSM::AUTOMATIC_TRANSITION, StateC>;
+        using transition3 = hcFSM::Transition<StateC, hcFSM::AUTOMATIC_TRANSITION, StateD>;
+        using transitions_table = hcFSM::TransitionsTable<
             transition1,
             transition2,
             transition3
         >;
 
-        auto stateMachine = StateMachine<transitions_table, StateA>{};
+        auto stateMachine = hcFSM::StateMachine<transitions_table, StateA>{};
         EXPECT_EQ(stateMachine.isInState<StateA>(), true);
 
         stateMachine.handleEvent(EventA{});
@@ -70,22 +69,22 @@ namespace hcFSM
     TEST(AutomaticTransitionTests, InDeeperLayerAutomaticTransition)
     {
         using InnerStateTransitions3 = hcFSM::TransitionsTable<
-            hcFSM::Transition<StateA, EventA, ExitState>
+            hcFSM::Transition<StateA, EventA, hcFSM::ExitState>
         >;
         using InnerStateMachine3 = hcFSM::StateMachine<InnerStateTransitions3>;
 
         using InnerStateTransitions2 = hcFSM::TransitionsTable<
             hcFSM::Transition<StateA, EventA, StateB>,
-            hcFSM::Transition<StateB, AUTOMATIC_TRANSITION, StateC>,
+            hcFSM::Transition<StateB, hcFSM::AUTOMATIC_TRANSITION, StateC>,
             hcFSM::Transition<StateC, EventA, StateD>,
-            hcFSM::Transition<StateD, AUTOMATIC_TRANSITION, ExitState>
+            hcFSM::Transition<StateD, hcFSM::AUTOMATIC_TRANSITION, hcFSM::ExitState>
             >;
         using InnerStateMachine2 = hcFSM::StateMachine<InnerStateTransitions2>;
 
          using InnerStateTransitions1 = hcFSM::TransitionsTable<
             hcFSM::Transition<StateA, EventA, InnerStateMachine2>,
-            hcFSM::Transition<InnerStateMachine2, AUTOMATIC_TRANSITION, InnerStateMachine3>,
-            hcFSM::Transition<InnerStateMachine3, EventA, ExitState>
+            hcFSM::Transition<InnerStateMachine2, hcFSM::AUTOMATIC_TRANSITION, InnerStateMachine3>,
+            hcFSM::Transition<InnerStateMachine3, EventA, hcFSM::ExitState>
             >;
         using InnerStateMachine1 = hcFSM::StateMachine<InnerStateTransitions1>;
 
@@ -129,13 +128,13 @@ namespace hcFSM
 
          using InnerStateTransitions1 = hcFSM::TransitionsTable<
             hcFSM::Transition<StateA, EventA, StateB>,
-            hcFSM::Transition<StateB, AUTOMATIC_TRANSITION, ExitState>
+            hcFSM::Transition<StateB, hcFSM::AUTOMATIC_TRANSITION, hcFSM::ExitState>
             >;
         using InnerStateMachine1 = hcFSM::StateMachine<InnerStateTransitions1>;
 
         using Transitions = hcFSM::TransitionsTable <
             hcFSM::Transition<StateA, EventA, InnerStateMachine1>,
-            hcFSM::Transition<InnerStateMachine1, AUTOMATIC_TRANSITION, InnerStateMachine2>
+            hcFSM::Transition<InnerStateMachine1, hcFSM::AUTOMATIC_TRANSITION, InnerStateMachine2>
         >;
 
         auto stateMachine = hcFSM::StateMachine<Transitions, StateA>{};
@@ -153,7 +152,7 @@ namespace hcFSM
     TEST(AutomaticTransitonTests, FromInitialState)
     {
         using TransitionsTable = hcFSM::TransitionsTable<
-            hcFSM::Transition<StateA, AUTOMATIC_TRANSITION, StateB>
+            hcFSM::Transition<StateA, hcFSM::AUTOMATIC_TRANSITION, StateB>
         >;
 
         auto stateMachine = hcFSM::StateMachine<TransitionsTable>{};
@@ -164,25 +163,25 @@ namespace hcFSM
     TEST(AutomaticTransitionTests, FewLayerUpAutomaticTransition)
     {
         using InnerStateTransitions3 = hcFSM::TransitionsTable<
-            hcFSM::Transition<StateA, EventA, ExitState>
+            hcFSM::Transition<StateA, EventA, hcFSM::ExitState>
         >;
         using InnerStateMachine3 = hcFSM::StateMachine<InnerStateTransitions3>;
 
         using InnerStateTransitions2 = hcFSM::TransitionsTable<
             hcFSM::Transition<StateA, EventA, InnerStateMachine3>,
-            hcFSM::Transition<InnerStateMachine3, AUTOMATIC_TRANSITION, ExitState>
+            hcFSM::Transition<InnerStateMachine3, hcFSM::AUTOMATIC_TRANSITION, hcFSM::ExitState>
             >;
         using InnerStateMachine2 = hcFSM::StateMachine<InnerStateTransitions2>;
 
          using InnerStateTransitions1 = hcFSM::TransitionsTable<
             hcFSM::Transition<StateA, EventA, InnerStateMachine2>,
-            hcFSM::Transition<InnerStateMachine2, AUTOMATIC_TRANSITION, ExitState>
+            hcFSM::Transition<InnerStateMachine2, hcFSM::AUTOMATIC_TRANSITION, hcFSM::ExitState>
             >;
         using InnerStateMachine1 = hcFSM::StateMachine<InnerStateTransitions1>;
 
         using Transitions = hcFSM::TransitionsTable <
             hcFSM::Transition<StateA, EventA, InnerStateMachine1>,
-            hcFSM::Transition<InnerStateMachine1, AUTOMATIC_TRANSITION, StateB>
+            hcFSM::Transition<InnerStateMachine1, hcFSM::AUTOMATIC_TRANSITION, StateB>
         >;
 
         auto stateMachine = hcFSM::StateMachine<Transitions, StateA>{};

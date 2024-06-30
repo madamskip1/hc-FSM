@@ -3,9 +3,7 @@
 #include "hcFSM/detail/transitions-table.h"
 
 
-
-
-namespace hcFSM
+namespace
 {
 	struct StateA {};
 	struct StateB {};
@@ -20,7 +18,7 @@ namespace hcFSM
 
 	TEST(TransitionStructMembersTests, SimpleTransition)
 	{
-		using transition = Transition<StateA, EventB, StateB>;
+		using transition = hcFSM::Transition<StateA, EventB, StateB>;
 
 		constexpr auto is_same_transition_before_state_type = std::is_same_v<StateA, typename transition::before_state_type>;
 		EXPECT_EQ(is_same_transition_before_state_type, true);
@@ -34,7 +32,7 @@ namespace hcFSM
 
 	TEST(TransitionStructMembersTests, TransitionWithoutActionWithGuard)
 	{
-		using transition = TransitionWithGuard<StateA, EventA, StateB, dummyCallableStruct2Args>;
+		using transition = hcFSM::TransitionWithGuard<StateA, EventA, StateB, dummyCallableStruct2Args>;
 
 		constexpr auto is_same_transition_before_state_type = std::is_same_v<StateA, typename transition::before_state_type>;
 		EXPECT_EQ(is_same_transition_before_state_type, true);
