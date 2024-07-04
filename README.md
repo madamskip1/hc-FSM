@@ -12,15 +12,15 @@
 
 ## Features
 
-|Feature| Status | Added in |
-|-|:-:|:-:|
-|  Basic transition | ✔  | |
-|  Automatic transition | ✔  | |
-|  Hierarchical SM (substates) | ✔  | |
-|  onEntry/onExit action | ✔  | |
-|  Transition action | ✔  | |
-|  Transition Guard | ✔  | |
-|  Set initial state | ✔  | |
+|Feature| Status |
+|-|:-:|
+|  Basic transition | ✔  |
+|  Automatic transition | ✔  |
+|  Hierarchical SM (substates) | ✔  |
+|  onEntry/onExit action | ✔ |
+|  Transition action | ✔  |
+|  Transition Guard | ✔  |
+|  Set initial state | ✔  |
 
 ## Documentation
 
