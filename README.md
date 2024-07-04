@@ -31,7 +31,7 @@ Detailed documentation can be found on [Wiki page](../../wiki/).
 
 ### Simple usage example
 
-Provided example illustrates implementation for simple light control system (or whatever what can be on and off). The system involves a light with two states: `Off` and `On`. The transition between them (toggle) is triggered by a `ButtonClicked` event.
+The provided example illustrates the implementation of a simple light control system (or whatever what can be on and off). The system involves a light with two states: `Off` and `On`. The transition between them (toggle) is triggered by a `ButtonClicked` event.
 
 <p align="center">
   <img src="examples/simple_example/simple_example_diagram.png" height="150px">  
@@ -66,8 +66,8 @@ int main()
 [![Realase version](https://badgen.net/github/release/madamskip1/hc-FSM/)](https://github.com/madamskip1/hc-FSM/releases)
 
 The hc-FSM library provides at least two convenient methods for integration.
-First, single header can be directly included in a project.
-Alternatively, for an more organized approach or when dealing with larger projects, the library can be effortlessly integrated using CMake's FetchContent. This allows for easy incorporation into the build process with automatic downloading hc-FSM library.
+First, the single header can be directly included in a project.
+Alternatively, for a more organized approach or when dealing with larger projects, the library can be effortlessly integrated using CMake's FetchContent. This allows for easy incorporation into the build process with automatic downloading of hc-FSM library.
 
 ### Single header
 1. Download single header ([single_header/hcFSM.h](/single_header/hcFSM.h)) and put into a project
@@ -79,7 +79,7 @@ or
 ```
 
 ### CMake's FetchContent
-This method automatically download hc-FSM library during CMake's configuration and add it to given project. To use [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html), CMake >= 3.11 is required.
+This method automatically downloads hc-FSM library during CMake's configuration and adds it to the given project. To use [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html), CMake >= 3.11 is required.
 
 ```cmake
 include(FetchContent)
