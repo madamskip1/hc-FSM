@@ -39,20 +39,50 @@ option(
     OFF
 )
 
-if(HCFSM_ENABLE_TESTS)
-    enable_testing()
-    add_subdirectory(tests)
-endif()
-
-
 option(
     HCFSM_ENABLE_EXAMPLES
     "Enable examples for hcFSM"
     OFF
 )
 
+option(
+    HCFSM_CPPCHECK
+    "Enable cppcheck for hcFSM"
+    OFF
+)
+
+if(HCFSM_ENABLE_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
 if(HCFSM_ENABLE_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+if(HCFSM_ENABLE_CPPCHECK)
+    find_program(CPPCHECK_EXECUTABLE cppcheck REQUIRED)
+
+    set(CXX_CPPCHECK_OPTIONS
+        "--enable=all"
+        "--inconclusive"
+        "--force"
+        "--inline-suppr"
+        "--std=c++17"
+        "--language=c++"
+        "--template=gcc"
+        "--verbose"
+        "--suppress=missingIncludeSystem"
+    )
+
+    file(GLOB_RECURSE HEADER_FILES ${CMAKE_CURRENT_LIST_DIR}/include/hcFSM/detail/*.h)
+
+    add_custom_target(run_cppcheck
+        COMMAND ${CPPCHECK_EXECUTABLE} ${CXX_CPPCHECK_OPTIONS} ${HEADER_FILES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running Cppcheck static analysis on hcFSM header files"
+        VERBATIM
+    )
 endif()
 
 

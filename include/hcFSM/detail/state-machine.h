@@ -174,7 +174,7 @@ namespace hcFSM
 		}
 
 		template <typename InnerStateMachineType, typename EventTriggerType>
-		constexpr HandleEventResult innerStateMachineTransition(InnerStateMachineType& innerStateMachine, const EventTriggerType& event) const
+		static constexpr HandleEventResult innerStateMachineTransition(InnerStateMachineType& innerStateMachine, const EventTriggerType& event)
 		{
 			const auto innerTransitionResult = innerStateMachine.handleEvent(event);
 			return innerTransitionResult;
@@ -256,7 +256,7 @@ namespace hcFSM
 
 
 		template <typename StateType, typename EventTriggerType>
-		constexpr void tryCallOnExit(StateType& state, const EventTriggerType& event) const
+		static constexpr void tryCallOnExit(StateType& state, const EventTriggerType& event)
 		{
 			if constexpr (has_onExit_v<StateType, EventTriggerType>)
 			{
@@ -269,7 +269,7 @@ namespace hcFSM
 		}
 
 		template <typename StateType, typename EventTriggerType>
-		constexpr void tryCallOnEntry(StateType& state, const EventTriggerType& event) const
+		static constexpr void tryCallOnEntry(StateType& state, const EventTriggerType& event)
 		{
 			if constexpr (has_onEntry_v<StateType, EventTriggerType>)
 			{
@@ -282,7 +282,7 @@ namespace hcFSM
 		}
 
 		template <typename Transition, typename StateBeforeType, typename EventTriggerType, typename StateAfterType>
-		constexpr void tryCallTransitionAction(StateBeforeType& stateBefore, const EventTriggerType& event, StateAfterType& stateAfter) const
+		static constexpr void tryCallTransitionAction(StateBeforeType& stateBefore, const EventTriggerType& event, StateAfterType& stateAfter)
 		{
 			if constexpr (hasAction_v<Transition>)
 			{
