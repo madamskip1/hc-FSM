@@ -2,7 +2,7 @@
  * @author: Adamski Maciej (madamskip1)
  * @project: hcFSM
  * @project_url: https://github.com/madamskip1/hc-FSM
- * @date: 2024-06-30
+ * @date: 2024-07-04
  * @license: MIT License. Keep metadata_header intact. 
  * @version: 0.5.6
  */
@@ -10,8 +10,8 @@
 #pragma once
 
 #include <type_traits>
-#include <variant>
 #include <tuple>
+#include <variant>
 
 namespace hcFSM
 {
@@ -612,7 +612,7 @@ namespace hcFSM
 		}
 
 		template <typename InnerStateMachineType, typename EventTriggerType>
-		constexpr HandleEventResult innerStateMachineTransition(InnerStateMachineType& innerStateMachine, const EventTriggerType& event) const
+		static constexpr HandleEventResult innerStateMachineTransition(InnerStateMachineType& innerStateMachine, const EventTriggerType& event)
 		{
 			const auto innerTransitionResult = innerStateMachine.handleEvent(event);
 			return innerTransitionResult;
@@ -694,7 +694,7 @@ namespace hcFSM
 
 
 		template <typename StateType, typename EventTriggerType>
-		constexpr void tryCallOnExit(StateType& state, const EventTriggerType& event) const
+		static constexpr void tryCallOnExit(StateType& state, const EventTriggerType& event)
 		{
 			if constexpr (has_onExit_v<StateType, EventTriggerType>)
 			{
@@ -707,7 +707,7 @@ namespace hcFSM
 		}
 
 		template <typename StateType, typename EventTriggerType>
-		constexpr void tryCallOnEntry(StateType& state, const EventTriggerType& event) const
+		static constexpr void tryCallOnEntry(StateType& state, const EventTriggerType& event)
 		{
 			if constexpr (has_onEntry_v<StateType, EventTriggerType>)
 			{
@@ -720,7 +720,7 @@ namespace hcFSM
 		}
 
 		template <typename Transition, typename StateBeforeType, typename EventTriggerType, typename StateAfterType>
-		constexpr void tryCallTransitionAction(StateBeforeType& stateBefore, const EventTriggerType& event, StateAfterType& stateAfter) const
+		static constexpr void tryCallTransitionAction(StateBeforeType& stateBefore, const EventTriggerType& event, StateAfterType& stateAfter)
 		{
 			if constexpr (hasAction_v<Transition>)
 			{
