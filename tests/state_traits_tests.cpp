@@ -18,7 +18,6 @@ namespace
         void onEntry(const Event& event) {};
 
         void onExit(const EventA& event) {};
-
     };
     struct StateD
     {
