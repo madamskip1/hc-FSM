@@ -23,7 +23,7 @@ class Packager:
         single_header_content.append("\n\n")
         single_header_content.append("#pragma once")
         single_header_content.append("\n\n")
-        single_header_content.extend(self.include_files)
+        single_header_content.extend(sorted(self.include_files))
         for file_content in self.files_content:
             single_header_content.append('\n')
             single_header_content.extend(file_content)
