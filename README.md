@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://github.com/madamskip1/hc-FSM/actions/workflows/build_and_test.yaml/badge.svg?branch=main)](https://github.com/madamskip1/hc-FSM/actions/workflows/build_and_test.yaml)
+[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/madamskip1/hc-FSM)](https://www.codefactor.io/repository/github/madamskip1/hc-fsm)
 
 ##### Compiler build support
 [![Build g++](https://github.com/madamskip1/hc-FSM/actions/workflows/build_g++.yaml/badge.svg?branch=main)](https://github.com/madamskip1/hc-FSM/actions/workflows/build_g++.yaml)
